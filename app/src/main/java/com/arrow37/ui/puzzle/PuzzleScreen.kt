@@ -55,6 +55,7 @@ fun PuzzleScreen(
         onUndo = { viewModel.undo() },
         onRedo = { viewModel.redo() },
         onReset = { viewModel.reset() },
+        onAddLife = { viewModel.addLife() },
         onArrowClick = { viewModel.onArrowTapped(it) },
         onNextLevel = { viewModel.nextLevel() },
         onToggleGrid = { viewModel.toggleGrid() },
@@ -72,6 +73,7 @@ fun PuzzleContent(
     onUndo: () -> Unit = {},
     onRedo: () -> Unit = {},
     onReset: () -> Unit = {},
+    onAddLife: () -> Unit = {},
     onArrowClick: (String) -> Unit = {},
     onNextLevel: () -> Unit = {},
     onToggleGrid: () -> Unit = {},
@@ -190,18 +192,23 @@ fun PuzzleContent(
                     AlertDialog(
                         onDismissRequest = onReset,
                         title = { Text("Game Over") },
-                        text = { Text("You ran out of lives!") },
+                        text = { Text("You ran out of lives! Watch an ad to get 1 more life and continue.") },
+                        dismissButton = {
+                            TextButton(onClick = onReset) {
+                                Text("Restart")
+                            }
+                        },
                         confirmButton = {
                             Button(onClick = {
                                 if (activity != null) {
                                     UnityAdsManager.showRewardedAd(activity) {
-                                        onReset()
+                                        onAddLife()
                                     }
                                 } else {
-                                    onReset()
+                                    onAddLife()
                                 }
                             }) {
-                                Text("Try Again")
+                                Text("watch ad to continue")
                             }
                         }
                     )
@@ -408,7 +415,8 @@ fun PuzzleScreenPreview() {
                     Arrow("23", Point(4f, 1f), Direction.UP, listOf(Point(4f, 1f))),
                     Arrow("24", Point(5f, 1f), Direction.UP, listOf(Point(5f, 1f)))
                 )
-            )
+            ),
+            onAddLife = {}
         )
     }
 }
