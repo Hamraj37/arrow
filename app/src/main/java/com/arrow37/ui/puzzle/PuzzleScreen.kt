@@ -284,8 +284,8 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawArrow(
 ) {
     if (arrow.body.isEmpty()) return
 
-    val strokeWidth = cellSizePx * 0.4f
-    val arrowHeadSize = cellSizePx * 0.5f
+    val strokeWidth = cellSizePx * 0.35f
+    val arrowHeadSize = cellSizePx * 0.7f
     
     // 1. Draw the body line
     val path = Path()
@@ -317,33 +317,33 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawArrow(
     
     val headPath = Path()
     // Shift the head triangle forward so it sits at the leading edge of the cell
-    val shift = cellSizePx * 0.12f
+    val shift = cellSizePx * 0.15f
     val tx = headX + arrow.direction.dx * shift
     val ty = headY + arrow.direction.dy * shift
     
-    val hw = arrowHeadSize * 0.7f // half-width
-    val hl = arrowHeadSize * 0.9f // half-length
+    val hw = arrowHeadSize * 0.65f // half-width
+    val hl = arrowHeadSize * 0.8f // half-length
     
     when (arrow.direction) {
         Direction.UP -> {
-            headPath.moveTo(tx - hw, ty + hl * 0.3f)
-            headPath.lineTo(tx, ty - hl * 0.7f)
-            headPath.lineTo(tx + hw, ty + hl * 0.3f)
+            headPath.moveTo(tx - hw, ty + hl * 0.4f)
+            headPath.lineTo(tx, ty - hl * 0.6f)
+            headPath.lineTo(tx + hw, ty + hl * 0.4f)
         }
         Direction.DOWN -> {
-            headPath.moveTo(tx - hw, ty - hl * 0.3f)
-            headPath.lineTo(tx, ty + hl * 0.7f)
-            headPath.lineTo(tx + hw, ty - hl * 0.3f)
+            headPath.moveTo(tx - hw, ty - hl * 0.4f)
+            headPath.lineTo(tx, ty + hl * 0.6f)
+            headPath.lineTo(tx + hw, ty - hl * 0.4f)
         }
         Direction.LEFT -> {
-            headPath.moveTo(tx + hl * 0.3f, ty - hw)
-            headPath.lineTo(tx - hl * 0.7f, ty)
-            headPath.lineTo(tx + hl * 0.3f, ty + hw)
+            headPath.moveTo(tx + hl * 0.4f, ty - hw)
+            headPath.lineTo(tx - hl * 0.6f, ty)
+            headPath.lineTo(tx + hl * 0.4f, ty + hw)
         }
         Direction.RIGHT -> {
-            headPath.moveTo(tx - hl * 0.3f, ty - hw)
-            headPath.lineTo(tx + hl * 0.7f, ty)
-            headPath.lineTo(tx - hl * 0.3f, ty + hw)
+            headPath.moveTo(tx - hl * 0.4f, ty - hw)
+            headPath.lineTo(tx + hl * 0.6f, ty)
+            headPath.lineTo(tx - hl * 0.4f, ty + hw)
         }
     }
     headPath.close()
