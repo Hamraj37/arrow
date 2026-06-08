@@ -37,6 +37,9 @@ import com.arrow37.ui.theme.ArrowBlue
 import com.arrow37.ui.theme.RedLives
 import com.arrow37.viewmodel.GameViewModel
 import com.arrow37.ui.ads.UnityBanner
+import com.arrow37.ui.ads.UnityAdsManager
+import android.app.Activity
+import androidx.compose.ui.platform.LocalContext
 
 @Composable
 fun PuzzleScreen(
@@ -75,6 +78,9 @@ fun PuzzleContent(
     onToggleSound: () -> Unit = {},
     onToggleVibration: () -> Unit = {}
 ) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -186,7 +192,15 @@ fun PuzzleContent(
                         title = { Text("Game Over") },
                         text = { Text("You ran out of lives!") },
                         confirmButton = {
-                            Button(onClick = onReset) {
+                            Button(onClick = {
+                                if (activity != null) {
+                                    UnityAdsManager.showRewardedAd(activity) {
+                                        onReset()
+                                    }
+                                } else {
+                                    onReset()
+                                }
+                            }) {
                                 Text("Try Again")
                             }
                         }
@@ -199,7 +213,15 @@ fun PuzzleContent(
                         title = { Text("Level Cleared!") },
                         text = { Text("Congratulations!") },
                         confirmButton = {
-                            Button(onClick = onNextLevel) {
+                            Button(onClick = {
+                                if (activity != null) {
+                                    UnityAdsManager.showRewardedAd(activity) {
+                                        onNextLevel()
+                                    }
+                                } else {
+                                    onNextLevel()
+                                }
+                            }) {
                                 Text("Next Level")
                             }
                         }

@@ -20,25 +20,13 @@ import com.arrow37.ui.puzzle.PuzzleScreen
 import com.arrow37.ui.settings.SettingsScreen
 import com.arrow37.ui.theme.ArrowTheme
 import com.arrow37.viewmodel.GameViewModel
-import com.unity3d.ads.IUnityAdsInitializationListener
-import com.unity3d.ads.UnityAds
+import com.arrow37.ui.ads.UnityAdsManager
 
 class MainActivity : ComponentActivity() {
-    private val gameId = "4799059" // Replace with your actual Game ID
-    private val testMode = true
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        UnityAds.initialize(applicationContext, gameId, testMode, object : IUnityAdsInitializationListener {
-            override fun onInitializationComplete() {
-                android.util.Log.d("UnityAds", "Initialization Complete")
-            }
-
-            override fun onInitializationFailed(error: UnityAds.UnityAdsInitializationError?, message: String?) {
-                android.util.Log.e("UnityAds", "Initialization Failed: $message")
-            }
-        })
+        UnityAdsManager.initialize(this)
 
         enableEdgeToEdge()
         setContent {
