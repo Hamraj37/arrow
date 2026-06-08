@@ -13,3 +13,4 @@ my-release-key.jks
 /captures
 .externalNativeBuild
 .cxx
+/release-key.jks
