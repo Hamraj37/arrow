@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Subtle Grid Lines -->
+    <path
+        android:strokeColor="#4FC3F7"
+        android:strokeWidth="0.5"
+        android:strokeAlpha="0.3"
+        android:pathData="M30,30 L78,30 M30,42 L78,42 M30,54 L78,54 M30,66 L78,66 M30,78 L78,78 M30,30 L30,78 M42,30 L42,78 M54,30 L54,78 M66,30 L66,78 M78,30 L78,78" />
+    <!-- Sleek Modern Arrow in Primary Color -->
+    <path
+        android:fillColor="#4FC3F7"
+        android:pathData="M54,34 L74,74 L54,64 L34,74 Z" />
+</vector>
