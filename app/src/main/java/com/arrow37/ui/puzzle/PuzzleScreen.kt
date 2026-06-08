@@ -285,24 +285,95 @@ fun PuzzleContent(
                 }
 
                 if (state.isLevelCleared) {
-                    AlertDialog(
-                        onDismissRequest = onNextLevel,
-                        title = { Text("Level Cleared!") },
-                        text = { Text("Congratulations!") },
-                        confirmButton = {
-                            Button(onClick = {
-                                if (activity != null) {
-                                    UnityAdsManager.showRewardedAd(activity) {
-                                        onNextLevel()
+                    Dialog(onDismissRequest = onNextLevel) {
+                        Surface(
+                            shape = RoundedCornerShape(28.dp),
+                            color = MaterialTheme.colorScheme.surface,
+                            modifier = Modifier.fillMaxWidth().padding(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Level Cleared!",
+                                    style = MaterialTheme.typography.headlineSmall.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = Color(0xFF334195)
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(24.dp))
+                                Row {
+                                    repeat(3) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Star,
+                                            contentDescription = null,
+                                            tint = Color(0xFFFFD700),
+                                            modifier = Modifier.size(48.dp).padding(horizontal = 4.dp)
+                                        )
                                     }
-                                } else {
-                                    onNextLevel()
                                 }
-                            }) {
-                                Text("Next Level")
+                                Spacer(modifier = Modifier.height(24.dp))
+                                Text(
+                                    text = "Congratulations!\nYou've mastered this puzzle.",
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        color = Color.Gray,
+                                        lineHeight = 20.sp
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(32.dp))
+                                Button(
+                                    onClick = {
+                                        if (activity != null) {
+                                            UnityAdsManager.showRewardedAd(activity) {
+                                                onNextLevel()
+                                            }
+                                        } else {
+                                            onNextLevel()
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                                    shape = CircleShape,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFFF3F5FF),
+                                        contentColor = Color(0xFF6371C5)
+                                    ),
+                                    elevation = ButtonDefaults.buttonElevation(0.dp)
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.PlayArrow,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Next Level",
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(12.dp))
+                                OutlinedButton(
+                                    onClick = onBack,
+                                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                                    shape = CircleShape,
+                                    border = BorderStroke(2.dp, Color(0xFFE0E0E0))
+                                ) {
+                                    Text(
+                                        text = "Menu",
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.Gray
+                                        )
+                                    )
+                                }
                             }
                         }
-                    )
+                    }
                 }
             }
 
