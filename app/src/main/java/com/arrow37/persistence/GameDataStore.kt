@@ -40,7 +40,7 @@ class GameDataStore(context: Context) {
 
     val isDarkMode: Flow<Boolean> = appContext.dataStore.data
         .map { preferences ->
-            preferences[DARK_MODE_KEY] ?: true
+            preferences[DARK_MODE_KEY] ?: false
         }
 
     val useNativeRefreshRate: Flow<Boolean> = appContext.dataStore.data

@@ -37,6 +37,6 @@ data class GameState(
     val showGrid: Boolean = true,
     val isSoundEnabled: Boolean = true,
     val isVibrationEnabled: Boolean = true,
-    val isDarkMode: Boolean = true,
+    val isDarkMode: Boolean = false,
     val useNativeRefreshRate: Boolean = true
 )

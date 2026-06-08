@@ -53,89 +53,112 @@ fun SettingsScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState())
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = 16.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Spacer(modifier = Modifier.height(16.dp))
 
-            // Container 1
-            SettingsGroup {
-                SettingRow(
-                    icon = Icons.Rounded.Language,
-                    title = "Language",
-                    trailing = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text("English", color = Color.Gray, fontSize = 14.sp)
-                            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = Color.Gray)
+                // Container 1
+                SettingsGroup {
+                    SettingRow(
+                        icon = Icons.Rounded.Language,
+                        title = "Language",
+                        trailing = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text("English", color = Color.Gray, fontSize = 14.sp)
+                                Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = Color.Gray)
+                            }
                         }
-                    }
-                )
-                SettingDivider()
-                SettingRow(
-                    icon = Icons.Rounded.Waves,
-                    title = "Vibrations",
-                    trailing = {
-                        Switch(
-                            checked = state.isVibrationEnabled,
-                            onCheckedChange = { viewModel.toggleVibration() },
-                            colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
-                        )
-                    }
-                )
-                SettingDivider()
-                SettingRow(
-                    icon = Icons.Rounded.VolumeUp,
-                    title = "Sounds",
-                    trailing = {
-                        Switch(
-                            checked = state.isSoundEnabled,
-                            onCheckedChange = { viewModel.toggleSound() },
-                            colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
-                        )
-                    }
-                )
-                SettingDivider()
-                SettingRow(
-                    icon = Icons.Rounded.DarkMode,
-                    title = "Dark mode",
-                    trailing = {
-                        Switch(
-                            checked = state.isDarkMode,
-                            onCheckedChange = { viewModel.toggleDarkMode() },
-                            colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
-                        )
-                    }
-                )
-                SettingDivider()
-                SettingRow(
-                    icon = Icons.Rounded.Smartphone,
-                    title = "Native Refresh Rate",
-                    trailing = {
-                        Switch(
-                            checked = state.useNativeRefreshRate,
-                            onCheckedChange = { viewModel.toggleNativeRefreshRate() },
-                            colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
-                        )
-                    }
-                )
+                    )
+                    SettingDivider()
+                    SettingRow(
+                        icon = Icons.Rounded.Waves,
+                        title = "Vibrations",
+                        trailing = {
+                            Switch(
+                                checked = state.isVibrationEnabled,
+                                onCheckedChange = { viewModel.toggleVibration() },
+                                colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
+                            )
+                        }
+                    )
+                    SettingDivider()
+                    SettingRow(
+                        icon = Icons.Rounded.VolumeUp,
+                        title = "Sounds",
+                        trailing = {
+                            Switch(
+                                checked = state.isSoundEnabled,
+                                onCheckedChange = { viewModel.toggleSound() },
+                                colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
+                            )
+                        }
+                    )
+                    SettingDivider()
+                    SettingRow(
+                        icon = Icons.Rounded.DarkMode,
+                        title = "Dark mode",
+                        trailing = {
+                            Switch(
+                                checked = state.isDarkMode,
+                                onCheckedChange = { viewModel.toggleDarkMode() },
+                                colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
+                            )
+                        }
+                    )
+                    SettingDivider()
+                    SettingRow(
+                        icon = Icons.Rounded.Smartphone,
+                        title = "Native Refresh Rate",
+                        trailing = {
+                            Switch(
+                                checked = state.useNativeRefreshRate,
+                                onCheckedChange = { viewModel.toggleNativeRefreshRate() },
+                                colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
+                            )
+                        }
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Container 5
+                SettingsGroup {
+                    SettingRow(
+                        icon = Icons.Rounded.Description,
+                        title = "Privacy"
+                    )
+                    SettingDivider()
+                    SettingRow(
+                        icon = Icons.Rounded.Info,
+                        title = "Terms of Service"
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Container 5
-            SettingsGroup {
-                SettingRow(
-                    icon = Icons.Rounded.Description,
-                    title = "Privacy"
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp, top = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Version 1.0",
+                    color = Color.Gray,
+                    fontSize = 14.sp
                 )
-                SettingDivider()
-                SettingRow(
-                    icon = Icons.Rounded.Info,
-                    title = "Terms of Service"
+                Text(
+                    text = "Developed by Hamraj37",
+                    color = Color.Gray,
+                    fontSize = 14.sp
                 )
             }
-            
-            Spacer(modifier = Modifier.height(32.dp))
         }
     }
 }
