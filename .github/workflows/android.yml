@@ -25,12 +25,12 @@ jobs:
 
     - name: Decode Keystore
       run: |
-        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release-key.jks
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/my-release-key.jks
 
     - name: Build Release APK
       run: ./gradlew assembleRelease
       env:
-        RELEASE_STORE_FILE: release-key.jks
+        RELEASE_STORE_FILE: my-release-key.jks
         RELEASE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         RELEASE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
@@ -38,7 +38,7 @@ jobs:
     - name: Build Release Bundle
       run: ./gradlew bundleRelease
       env:
-        RELEASE_STORE_FILE: release-key.jks
+        RELEASE_STORE_FILE: my-release-key.jks
         RELEASE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
         RELEASE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
         RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
