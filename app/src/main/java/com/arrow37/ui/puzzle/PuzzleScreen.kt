@@ -304,11 +304,11 @@ fun PuzzleContent(
                                 )
                                 Spacer(modifier = Modifier.height(24.dp))
                                 Row {
-                                    repeat(3) {
+                                    repeat(3) { index ->
                                         Icon(
-                                            imageVector = Icons.Rounded.Star,
+                                            imageVector = if (index < state.lives) Icons.Rounded.Star else Icons.Rounded.StarOutline,
                                             contentDescription = null,
-                                            tint = Color(0xFFFFD700),
+                                            tint = if (index < state.lives) Color(0xFFFFD700) else Color.Gray.copy(alpha = 0.3f),
                                             modifier = Modifier.size(48.dp).padding(horizontal = 4.dp)
                                         )
                                     }
