@@ -284,8 +284,8 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawArrow(
 ) {
     if (arrow.body.isEmpty()) return
 
-    val strokeWidth = cellSizePx * 0.35f
-    val arrowHeadSize = cellSizePx * 0.55f
+    val strokeWidth = cellSizePx * 0.4f
+    val arrowHeadSize = cellSizePx * 0.5f
     
     // 1. Draw the body line
     val path = Path()
@@ -293,7 +293,7 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawArrow(
     val headPoint = arrow.body.first()
     val tailPoint = arrow.body.last()
     
-    // Draw from tail towards the head, but stop slightly before the head center to join cleanly
+    // Draw from tail towards the head
     path.moveTo(tailPoint.x * cellSizePx + cellSizePx / 2, tailPoint.y * cellSizePx + cellSizePx / 2)
     
     for (i in arrow.body.size - 2 downTo 0) {
@@ -311,31 +311,39 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawArrow(
         )
     )
 
-    // 2. Draw the head triangle (Solid/Filled for better clarity)
+    // 2. Draw the head triangle
     val headX = headPoint.x * cellSizePx + cellSizePx / 2
     val headY = headPoint.y * cellSizePx + cellSizePx / 2
     
     val headPath = Path()
+    // Shift the head triangle forward so it sits at the leading edge of the cell
+    val shift = cellSizePx * 0.12f
+    val tx = headX + arrow.direction.dx * shift
+    val ty = headY + arrow.direction.dy * shift
+    
+    val hw = arrowHeadSize * 0.7f // half-width
+    val hl = arrowHeadSize * 0.9f // half-length
+    
     when (arrow.direction) {
         Direction.UP -> {
-            headPath.moveTo(headX - arrowHeadSize * 0.5f, headY + arrowHeadSize * 0.3f)
-            headPath.lineTo(headX, headY - arrowHeadSize * 0.5f)
-            headPath.lineTo(headX + arrowHeadSize * 0.5f, headY + arrowHeadSize * 0.3f)
+            headPath.moveTo(tx - hw, ty + hl * 0.3f)
+            headPath.lineTo(tx, ty - hl * 0.7f)
+            headPath.lineTo(tx + hw, ty + hl * 0.3f)
         }
         Direction.DOWN -> {
-            headPath.moveTo(headX - arrowHeadSize * 0.5f, headY - arrowHeadSize * 0.3f)
-            headPath.lineTo(headX, headY + arrowHeadSize * 0.5f)
-            headPath.lineTo(headX + arrowHeadSize * 0.5f, headY - arrowHeadSize * 0.3f)
+            headPath.moveTo(tx - hw, ty - hl * 0.3f)
+            headPath.lineTo(tx, ty + hl * 0.7f)
+            headPath.lineTo(tx + hw, ty - hl * 0.3f)
         }
         Direction.LEFT -> {
-            headPath.moveTo(headX + arrowHeadSize * 0.3f, headY - arrowHeadSize * 0.5f)
-            headPath.lineTo(headX - arrowHeadSize * 0.5f, headY)
-            headPath.lineTo(headX + arrowHeadSize * 0.3f, headY + arrowHeadSize * 0.5f)
+            headPath.moveTo(tx + hl * 0.3f, ty - hw)
+            headPath.lineTo(tx - hl * 0.7f, ty)
+            headPath.lineTo(tx + hl * 0.3f, ty + hw)
         }
         Direction.RIGHT -> {
-            headPath.moveTo(headX - arrowHeadSize * 0.3f, headY - arrowHeadSize * 0.5f)
-            headPath.lineTo(headX + arrowHeadSize * 0.5f, headY)
-            headPath.lineTo(headX - arrowHeadSize * 0.3f, headY + arrowHeadSize * 0.5f)
+            headPath.moveTo(tx - hl * 0.3f, ty - hw)
+            headPath.lineTo(tx + hl * 0.7f, ty)
+            headPath.lineTo(tx - hl * 0.3f, ty + hw)
         }
     }
     headPath.close()

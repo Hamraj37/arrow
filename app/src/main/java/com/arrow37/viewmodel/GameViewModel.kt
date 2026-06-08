@@ -56,58 +56,112 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         val level = currentState.level
         val random = Random(level.toLong() * 98765)
         
-        // Slightly larger grid size scaling
-        val size = (6 + (level / 2)).coerceAtMost(22)
+        // Balanced grid size scaling
+        val size = (6 + (level / 5)).coerceAtMost(18)
         
         val arrows = mutableListOf<Arrow>()
         val occupied = mutableSetOf<Pair<Int, Int>>()
 
-        // Increased density target: 85% of the grid
-        val targetCellCount = (size * size * 0.85f).toInt()
+        // Density target: 65% of the grid for better clarity and fewer overlaps
+        val targetCellCount = (size * size * 0.65f).toInt()
         var currentCellCount = 0
         
         var attempts = 0
-        while (currentCellCount < targetCellCount && attempts < 15000) {
+        while (currentCellCount < targetCellCount && attempts < 12000) {
             attempts++
             
             val dir = Direction.entries[random.nextInt(Direction.entries.size)]
-            // Longer arrows allowed as level increases
-            val maxLength = (4 + level / 2).coerceAtMost(size - 2)
-            val length = if (level < 3) 2 else random.nextInt(2, maxLength.coerceAtLeast(3))
+            val length = if (level < 3) 2 else random.nextInt(2, 5)
             
             val headX = random.nextInt(size)
             val headY = random.nextInt(size)
             
+            // STRICT OVERLAP CHECK for the head
+            if ((headX to headY) in occupied) continue
+
             val body = mutableListOf<Point>()
-            var fits = true
             val cells = mutableListOf<Pair<Int, Int>>()
             
-            for (i in 0 until length) {
-                val bx = headX - dir.dx * i
-                val by = headY - dir.dy * i
+            var currX = headX
+            var currY = headY
+            body.add(Point(currX.toFloat(), currY.toFloat()))
+            cells.add(currX to currY)
+            
+            // Define the "danger zone": cells that the head will pass through to exit
+            val exitPathCells = mutableSetOf<Pair<Int, Int>>()
+            var ex = headX + dir.dx
+            var ey = headY + dir.dy
+            while (ex in 0 until size && ey in 0 until size) {
+                exitPathCells.add(ex to ey)
+                ex += dir.dx
+                ey += dir.dy
+            }
+
+            // ENFORCE "NECK": The first segment after the head should ideally be 
+            // opposite to the exit direction to give a clear visual orientation.
+            val neckX = headX - dir.dx
+            val neckY = headY - dir.dy
+            if (neckX in 0 until size && neckY in 0 until size && (neckX to neckY) !in occupied) {
+                currX = neckX
+                currY = neckY
+                body.add(Point(currX.toFloat(), currY.toFloat()))
+                cells.add(currX to currY)
+            }
+
+            var fits = true
+            for (i in body.size until length) {
+                val neighbors = listOf(
+                    currX + 1 to currY,
+                    currX - 1 to currY,
+                    currX to currY + 1,
+                    currX to currY - 1
+                ).filter { (nx, ny) ->
+                    nx in 0 until size && ny in 0 until size && 
+                    (nx to ny) !in occupied && 
+                    (nx to ny) !in cells &&
+                    (nx to ny) !in exitPathCells // DO NOT grow body in front of the head
+                }
                 
-                if (bx !in 0 until size || by !in 0 until size || (bx to by) in occupied) {
-                    fits = false
+                if (neighbors.isEmpty()) {
+                    fits = (body.size >= 2) // Accept shorter arrow if we at least have a neck
                     break
                 }
-                body.add(Point(bx.toFloat(), by.toFloat()))
-                cells.add(bx to by)
+                
+                // Very high bias for straightness (90%)
+                val backDirX = -dir.dx
+                val backDirY = -dir.dy
+                val preferred = (currX + backDirX) to (currY + backDirY)
+                
+                val next = if (preferred in neighbors && random.nextFloat() < 0.9f) {
+                    preferred
+                } else {
+                    neighbors[random.nextInt(neighbors.size)]
+                }
+                
+                currX = next.first
+                currY = next.second
+                body.add(Point(currX.toFloat(), currY.toFloat()))
+                cells.add(currX to currY)
             }
             
             if (!fits) continue
 
-            // SOLVABILITY CHECK: Path in front of the head must be clear of ALREADY PLACED arrows
-            // This ensures that the puzzle is solvable by removing arrows in REVERSE order of generation.
+            // ROBUST SOLVABILITY CHECK: Exit path must be clear of all OTHER arrows
             var clearPath = true
-            var tx = headX + dir.dx
-            var ty = headY + dir.dy
-            while (tx in 0 until size && ty in 0 until size) {
-                if ((tx to ty) in occupied) {
-                    clearPath = false
-                    break
+            for (p in body) {
+                var tx = p.x.toInt() + dir.dx
+                var ty = p.y.toInt() + dir.dy
+                while (tx in 0 until size && ty in 0 until size) {
+                    // It's okay to pass through its own body cells during generation, 
+                    // but NOT through already placed arrows in 'occupied'
+                    if ((tx to ty) in occupied) {
+                        clearPath = false
+                        break
+                    }
+                    tx += dir.dx
+                    ty += dir.dy
                 }
-                tx += dir.dx
-                ty += dir.dy
+                if (!clearPath) break
             }
 
             if (clearPath) {
@@ -125,7 +179,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 levelName = "Level $level",
                 isGameOver = false,
                 isLevelCleared = false,
-                history = emptyList()
+                history = emptyList(),
+                redoStack = emptyList()
             ) 
         }
     }
@@ -156,10 +211,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     private suspend fun moveArrow(originalArrow: Arrow) {
         val stateAtStart = _uiState.value
         val gridSize = stateAtStart.gridSize
+        val pathReference = originalArrow.body
+        val direction = originalArrow.direction
         
-        var currentBody = originalArrow.body
-        var currentHead = originalArrow.head
+        var totalMoved = 0f
         var collision = false
+        val step = 0.20f
         
         _uiState.update { state ->
             state.copy(arrows = state.arrows.map { 
@@ -167,52 +224,71 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             })
         }
 
-        val step = 0.25f
         while (true) {
-            val nextBody = currentBody.map { Point(it.x + originalArrow.direction.dx * step, it.y + originalArrow.direction.dy * step) }
-            val nextHead = Point(currentHead.x + originalArrow.direction.dx * step, currentHead.y + originalArrow.direction.dy * step)
+            totalMoved += step
             
-            // Real-time Collision detection against live positions of other stationary arrows
-            // We ignore other "escaping" arrows to prevent frustrating multi-touch crashes
-            val currentState = _uiState.value
-            
-            // Only check collision if the head is still inside the grid
-            val isHeadInGrid = nextHead.x >= -0.1f && nextHead.x < gridSize - 0.9f && 
-                               nextHead.y >= -0.1f && nextHead.y < gridSize - 0.9f
-            
-            val hitOther = if (isHeadInGrid) {
-                currentState.arrows.any { other ->
-                    // Ignore: self, already escaped, and other arrows currently in motion (escaping)
-                    if (other.id == originalArrow.id || other.isEscaped || other.isEscaping) return@any false
-                    
-                    other.body.any { op -> 
-                        val dx = nextHead.x - op.x
-                        val dy = nextHead.y - op.y
-                        val distSq = dx * dx + dy * dy
-                        distSq < 0.40f 
+            // Snake-like movement: segments follow the path defined by the original body and direction
+            val nextBody = List(pathReference.size) { i ->
+                val u = i.toFloat() - totalMoved
+                if (u <= 0f) {
+                    // Head and parts following the exit direction
+                    Point(
+                        pathReference[0].x + direction.dx * (-u),
+                        pathReference[0].y + direction.dy * (-u)
+                    )
+                } else {
+                    // Parts still slithering through the original curved body
+                    val k = u.toInt()
+                    val f = u - k
+                    if (k + 1 < pathReference.size) {
+                        val p1 = pathReference[k]
+                        val p2 = pathReference[k + 1]
+                        Point(
+                            p1.x + (p2.x - p1.x) * f,
+                            p1.y + (p2.y - p1.y) * f
+                        )
+                    } else {
+                        // Extrapolate beyond tail if necessary (rare)
+                        val last = pathReference.last()
+                        val prev = if (pathReference.size > 1) pathReference[pathReference.size - 2] else last
+                        Point(
+                            last.x + (last.x - prev.x) * (u - (pathReference.size - 1)),
+                            last.y + (last.y - prev.y) * (u - (pathReference.size - 1))
+                        )
                     }
                 }
-            } else false
+            }
+            val nextHead = nextBody.first()
+
+            val currentState = _uiState.value
+            val hitOther = currentState.arrows.any { other ->
+                if (other.id == originalArrow.id || other.isEscaped || other.isEscaping) return@any false
+                
+                nextBody.any { bp ->
+                    other.body.any { op -> 
+                        val dx = bp.x - op.x
+                        val dy = bp.y - op.y
+                        (dx * dx + dy * dy) < 0.45f
+                    }
+                }
+            }
             
             if (hitOther) {
                 collision = true
                 break
             }
             
-            currentBody = nextBody
-            currentHead = nextHead
-            
             _uiState.update { state ->
                 state.copy(arrows = state.arrows.map { 
-                    if (it.id == originalArrow.id) it.copy(body = currentBody, head = currentHead) else it 
+                    if (it.id == originalArrow.id) it.copy(body = nextBody, head = nextHead) else it 
                 })
             }
 
             // Check if arrow is fully outside the grid
             val buffer = 1.0f 
-            val anyPartInGrid = currentBody.any { 
-                it.x >= -buffer && it.x < gridSize + buffer - 1 && 
-                it.y >= -buffer && it.y < gridSize + buffer - 1
+            val anyPartInGrid = nextBody.any { 
+                it.x >= -buffer && it.x < gridSize + buffer && 
+                it.y >= -buffer && it.y < gridSize + buffer
             }
             
             if (!anyPartInGrid) break
@@ -239,7 +315,6 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             }
         } else {
             if (_uiState.value.isSoundEnabled) soundManager.playEscape()
-            if (_uiState.value.isVibrationEnabled) hapticManager.vibrateEscape()
             _uiState.update { state ->
                 val updatedArrows = state.arrows.map { 
                     if (it.id == originalArrow.id) it.copy(isEscaping = false, isEscaped = true) else it 
