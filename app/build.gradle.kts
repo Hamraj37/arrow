@@ -57,6 +57,9 @@ android {
                 enable = false
             }
         }
+        debug {
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
