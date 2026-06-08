@@ -2,6 +2,7 @@ package com.arrow37.ui.ads
 
 import android.app.Activity
 import android.util.Log
+import com.arrow37.BuildConfig
 import com.unity3d.ads.IUnityAdsInitializationListener
 import com.unity3d.ads.IUnityAdsLoadListener
 import com.unity3d.ads.IUnityAdsShowListener
@@ -10,9 +11,9 @@ import com.unity3d.ads.UnityAdsShowOptions
 
 object UnityAdsManager {
     private const val TAG = "UnityAdsManager"
-    private const val GAME_ID = "4799059"
-    private const val TEST_MODE = true
-    private const val REWARDED_PLACEMENT_ID = "Rewarded_Android"
+    private val GAME_ID = BuildConfig.UNITY_GAME_ID
+    private val TEST_MODE = BuildConfig.UNITY_TEST_MODE
+    private val REWARDED_PLACEMENT_ID = BuildConfig.UNITY_REWARDED_ID
 
     fun initialize(activity: Activity) {
         UnityAds.initialize(activity.applicationContext, GAME_ID, TEST_MODE, object : IUnityAdsInitializationListener {

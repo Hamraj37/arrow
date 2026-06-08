@@ -20,6 +20,22 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { properties.load(it) }
+        }
+
+        val gameId = properties.getProperty("UNITY_GAME_ID") ?: System.getenv("UNITY_GAME_ID") ?: "4799059"
+        val rewardedId = properties.getProperty("UNITY_REWARDED_ID") ?: System.getenv("UNITY_REWARDED_ID") ?: "Rewarded_Android"
+        val bannerId = properties.getProperty("UNITY_BANNER_ID") ?: System.getenv("UNITY_BANNER_ID") ?: "Banner_Android"
+        val testMode = properties.getProperty("UNITY_TEST_MODE") ?: System.getenv("UNITY_TEST_MODE") ?: "true"
+
+        buildConfigField("String", "UNITY_GAME_ID", "\"$gameId\"")
+        buildConfigField("String", "UNITY_REWARDED_ID", "\"$rewardedId\"")
+        buildConfigField("String", "UNITY_BANNER_ID", "\"$bannerId\"")
+        buildConfigField("boolean", "UNITY_TEST_MODE", testMode)
     }
 
     signingConfigs {
@@ -67,6 +83,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

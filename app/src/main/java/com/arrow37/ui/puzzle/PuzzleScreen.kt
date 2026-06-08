@@ -40,6 +40,7 @@ import com.arrow37.data.Point
 import com.arrow37.ui.theme.ArrowBlue
 import com.arrow37.ui.theme.RedLives
 import com.arrow37.viewmodel.GameViewModel
+import com.arrow37.BuildConfig
 import com.arrow37.ui.ads.UnityBanner
 import com.arrow37.ui.ads.UnityAdsManager
 import android.app.Activity
@@ -177,7 +178,7 @@ fun PuzzleContent(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            UnityBanner(placementId = "Banner_Android")
+            UnityBanner(placementId = BuildConfig.UNITY_BANNER_ID)
             
             Box(
                 modifier = Modifier
@@ -377,7 +378,7 @@ fun PuzzleContent(
                 }
             }
 
-            UnityBanner(placementId = "Banner_Android")
+            UnityBanner(placementId = BuildConfig.UNITY_BANNER_ID)
         }
     }
 }

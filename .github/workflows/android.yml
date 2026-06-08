@@ -29,6 +29,10 @@ jobs:
         SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
         SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        UNITY_GAME_ID: ${{ secrets.UNITY_GAME_ID }}
+        UNITY_REWARDED_ID: ${{ secrets.UNITY_REWARDED_ID }}
+        UNITY_BANNER_ID: ${{ secrets.UNITY_BANNER_ID }}
+        UNITY_TEST_MODE: false
 
     - name: Build Release Bundle
       run: ./gradlew bundleRelease
@@ -37,6 +41,10 @@ jobs:
         SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
         SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+        UNITY_GAME_ID: ${{ secrets.UNITY_GAME_ID }}
+        UNITY_REWARDED_ID: ${{ secrets.UNITY_REWARDED_ID }}
+        UNITY_BANNER_ID: ${{ secrets.UNITY_BANNER_ID }}
+        UNITY_TEST_MODE: false
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
