@@ -55,8 +55,7 @@ jobs:
       with:
         tag_name: v1.0.${{ github.run_number }}
         name: Release v1.0.${{ github.run_number }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         files: |
           app/build/outputs/apk/release/*.apk
           app/build/outputs/bundle/release/*.aab
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
