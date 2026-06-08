@@ -23,11 +23,25 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    - name: Decode Keystore
+      run: |
+        echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/release-key.jks
+
     - name: Build Release APK
       run: ./gradlew assembleRelease
+      env:
+        RELEASE_STORE_FILE: release-key.jks
+        RELEASE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        RELEASE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
     - name: Build Release Bundle
       run: ./gradlew bundleRelease
+      env:
+        RELEASE_STORE_FILE: release-key.jks
+        RELEASE_STORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+        RELEASE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        RELEASE_KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
