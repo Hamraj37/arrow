@@ -23,10 +23,14 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.min
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arrow37.ui.theme.ArrowTheme
 import com.arrow37.data.Arrow
@@ -189,29 +193,95 @@ fun PuzzleContent(
                 )
                 
                 if (state.isGameOver) {
-                    AlertDialog(
-                        onDismissRequest = onReset,
-                        title = { Text("Game Over") },
-                        text = { Text("You ran out of lives! Watch an ad to get 1 more life and continue.") },
-                        dismissButton = {
-                            TextButton(onClick = onReset) {
-                                Text("Restart")
-                            }
-                        },
-                        confirmButton = {
-                            Button(onClick = {
-                                if (activity != null) {
-                                    UnityAdsManager.showRewardedAd(activity) {
-                                        onAddLife()
+                    Dialog(onDismissRequest = onReset) {
+                        Surface(
+                            shape = RoundedCornerShape(28.dp),
+                            color = MaterialTheme.colorScheme.surface,
+                            modifier = Modifier.fillMaxWidth().padding(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(24.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = "Continue?",
+                                    style = MaterialTheme.typography.headlineSmall.copy(
+                                        fontWeight = FontWeight.ExtraBold,
+                                        color = Color(0xFF334195)
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(24.dp))
+                                Row {
+                                    repeat(3) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.Favorite,
+                                            contentDescription = null,
+                                            tint = RedLives,
+                                            modifier = Modifier.size(48.dp).padding(horizontal = 4.dp)
+                                        )
                                     }
-                                } else {
-                                    onAddLife()
                                 }
-                            }) {
-                                Text("watch ad to continue")
+                                Spacer(modifier = Modifier.height(24.dp))
+                                Text(
+                                    text = "Watch an ad to refill your lives\nand keep playing!",
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        color = Color.Gray,
+                                        lineHeight = 20.sp
+                                    )
+                                )
+                                Spacer(modifier = Modifier.height(32.dp))
+                                Button(
+                                    onClick = {
+                                        if (activity != null) {
+                                            UnityAdsManager.showRewardedAd(activity) {
+                                                onAddLife()
+                                            }
+                                        } else {
+                                            onAddLife()
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                                    shape = CircleShape,
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = Color(0xFFF3F5FF),
+                                        contentColor = Color(0xFF6371C5)
+                                    ),
+                                    elevation = ButtonDefaults.buttonElevation(0.dp)
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Rounded.PlayArrow,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(24.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Text(
+                                            text = "Add More Lives",
+                                            style = MaterialTheme.typography.titleMedium.copy(
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(12.dp))
+                                OutlinedButton(
+                                    onClick = onReset,
+                                    modifier = Modifier.fillMaxWidth().height(56.dp),
+                                    shape = CircleShape,
+                                    border = BorderStroke(2.dp, Color(0xFFE0E0E0))
+                                ) {
+                                    Text(
+                                        text = "Restart",
+                                        style = MaterialTheme.typography.titleMedium.copy(
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color.Gray
+                                        )
+                                    )
+                                }
                             }
                         }
-                    )
+                    }
                 }
 
                 if (state.isLevelCleared) {
