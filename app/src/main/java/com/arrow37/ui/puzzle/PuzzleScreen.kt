@@ -36,6 +36,7 @@ import com.arrow37.data.Point
 import com.arrow37.ui.theme.ArrowBlue
 import com.arrow37.ui.theme.RedLives
 import com.arrow37.viewmodel.GameViewModel
+import com.arrow37.ui.ads.UnityBanner
 
 @Composable
 fun PuzzleScreen(
@@ -150,7 +151,7 @@ fun PuzzleContent(
                     contentColor = if (state.showGrid) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
                     Icon(
-                        if (state.showGrid) Icons.Rounded.GridOn else Icons.Rounded.GridOn,
+                        if (state.showGrid) Icons.Rounded.GridOn else Icons.Rounded.GridOff,
                         contentDescription = "Toggle Grid"
                     )
                 }
@@ -158,44 +159,55 @@ fun PuzzleContent(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        Box(
+        Column(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            contentAlignment = Alignment.Center
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            PuzzleGrid(
-                arrows = state.arrows,
-                gridSize = state.gridSize,
-                showGrid = state.showGrid,
-                onArrowClick = onArrowClick
-            )
+            UnityBanner(placementId = "Banner_Android")
             
-            if (state.isGameOver) {
-                AlertDialog(
-                    onDismissRequest = onReset,
-                    title = { Text("Game Over") },
-                    text = { Text("You ran out of lives!") },
-                    confirmButton = {
-                        Button(onClick = onReset) {
-                            Text("Try Again")
-                        }
-                    }
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                PuzzleGrid(
+                    arrows = state.arrows,
+                    gridSize = state.gridSize,
+                    showGrid = state.showGrid,
+                    onArrowClick = onArrowClick
                 )
+                
+                if (state.isGameOver) {
+                    AlertDialog(
+                        onDismissRequest = onReset,
+                        title = { Text("Game Over") },
+                        text = { Text("You ran out of lives!") },
+                        confirmButton = {
+                            Button(onClick = onReset) {
+                                Text("Try Again")
+                            }
+                        }
+                    )
+                }
+
+                if (state.isLevelCleared) {
+                    AlertDialog(
+                        onDismissRequest = onNextLevel,
+                        title = { Text("Level Cleared!") },
+                        text = { Text("Congratulations!") },
+                        confirmButton = {
+                            Button(onClick = onNextLevel) {
+                                Text("Next Level")
+                            }
+                        }
+                    )
+                }
             }
 
-            if (state.isLevelCleared) {
-                AlertDialog(
-                    onDismissRequest = onNextLevel,
-                    title = { Text("Level Cleared!") },
-                    text = { Text("Congratulations!") },
-                    confirmButton = {
-                        Button(onClick = onNextLevel) {
-                            Text("Next Level")
-                        }
-                    }
-                )
-            }
+            UnityBanner(placementId = "Banner_Android")
         }
     }
 }
@@ -284,16 +296,18 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawArrow(
 ) {
     if (arrow.body.isEmpty()) return
 
-    val strokeWidth = cellSizePx * 0.35f
-    val arrowHeadSize = cellSizePx * 0.7f
+    val strokeWidth = cellSizePx * 0.28f
+    val headWidth = cellSizePx * 0.6f
+    val headLength = cellSizePx * 0.5f
     
-    // 1. Draw the body line
-    val path = Path()
-    // The head of the arrow is body[0]
     val headPoint = arrow.body.first()
     val tailPoint = arrow.body.last()
     
-    // Draw from tail towards the head
+    val headX = headPoint.x * cellSizePx + cellSizePx / 2
+    val headY = headPoint.y * cellSizePx + cellSizePx / 2
+
+    // 1. Draw the body line
+    val path = Path()
     path.moveTo(tailPoint.x * cellSizePx + cellSizePx / 2, tailPoint.y * cellSizePx + cellSizePx / 2)
     
     for (i in arrow.body.size - 2 downTo 0) {
@@ -312,40 +326,23 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawArrow(
     )
 
     // 2. Draw the head triangle
-    val headX = headPoint.x * cellSizePx + cellSizePx / 2
-    val headY = headPoint.y * cellSizePx + cellSizePx / 2
-    
     val headPath = Path()
-    // Shift the head triangle forward so it sits at the leading edge of the cell
-    val shift = cellSizePx * 0.15f
-    val tx = headX + arrow.direction.dx * shift
-    val ty = headY + arrow.direction.dy * shift
     
-    val hw = arrowHeadSize * 0.65f // half-width
-    val hl = arrowHeadSize * 0.8f // half-length
+    // Tip of the arrow - placed near the cell edge
+    val tipX = headX + arrow.direction.dx * (cellSizePx * 0.42f)
+    val tipY = headY + arrow.direction.dy * (cellSizePx * 0.42f)
     
-    when (arrow.direction) {
-        Direction.UP -> {
-            headPath.moveTo(tx - hw, ty + hl * 0.4f)
-            headPath.lineTo(tx, ty - hl * 0.6f)
-            headPath.lineTo(tx + hw, ty + hl * 0.4f)
-        }
-        Direction.DOWN -> {
-            headPath.moveTo(tx - hw, ty - hl * 0.4f)
-            headPath.lineTo(tx, ty + hl * 0.6f)
-            headPath.lineTo(tx + hw, ty - hl * 0.4f)
-        }
-        Direction.LEFT -> {
-            headPath.moveTo(tx + hl * 0.4f, ty - hw)
-            headPath.lineTo(tx - hl * 0.6f, ty)
-            headPath.lineTo(tx + hl * 0.4f, ty + hw)
-        }
-        Direction.RIGHT -> {
-            headPath.moveTo(tx - hl * 0.4f, ty - hw)
-            headPath.lineTo(tx + hl * 0.6f, ty)
-            headPath.lineTo(tx - hl * 0.4f, ty + hw)
-        }
-    }
+    // Base center of the head triangle
+    val baseX = tipX - arrow.direction.dx * headLength
+    val baseY = tipY - arrow.direction.dy * headLength
+    
+    // Orthogonal vector for the base width
+    val ux = -arrow.direction.dy * (headWidth / 2f)
+    val uy = arrow.direction.dx * (headWidth / 2f)
+    
+    headPath.moveTo(tipX, tipY)
+    headPath.lineTo(baseX + ux, baseY + uy)
+    headPath.lineTo(baseX - ux, baseY - uy)
     headPath.close()
 
     drawPath(
@@ -364,18 +361,30 @@ fun PuzzleScreenPreview() {
                 lives = 3,
                 gridSize = 8,
                 arrows = listOf(
-                    Arrow(
-                        id = "1",
-                        head = Point(4f, 4f),
-                        direction = Direction.UP,
-                        body = listOf(Point(4f, 4f), Point(4f, 5f), Point(4f, 6f))
-                    ),
-                    Arrow(
-                        id = "2",
-                        head = Point(2f, 2f),
-                        direction = Direction.RIGHT,
-                        body = listOf(Point(2f, 2f), Point(1f, 2f))
-                    )
+                    Arrow("1", Point(4f, 4f), Direction.UP, listOf(Point(4f, 4f), Point(4f, 5f), Point(4f, 6f))),
+                    Arrow("2", Point(2f, 2f), Direction.RIGHT, listOf(Point(2f, 2f), Point(1f, 2f))),
+                    Arrow("3", Point(0f, 1f), Direction.DOWN, listOf(Point(0f, 1f), Point(0f, 0f))),
+                    Arrow("4", Point(6f, 1f), Direction.LEFT, listOf(Point(6f, 1f), Point(7f, 1f))),
+                    Arrow("5", Point(1f, 5f), Direction.DOWN, listOf(Point(1f, 5f), Point(1f, 4f))),
+                    Arrow("6", Point(5f, 7f), Direction.RIGHT, listOf(Point(5f, 7f), Point(4f, 7f), Point(3f, 7f))),
+                    Arrow("7", Point(6f, 6f), Direction.UP, listOf(Point(6f, 6f), Point(6f, 7f))),
+                    Arrow("8", Point(0f, 7f), Direction.LEFT, listOf(Point(0f, 7f), Point(1f, 7f))),
+                    Arrow("9", Point(3f, 3f), Direction.RIGHT, listOf(Point(3f, 3f), Point(2f, 3f))),
+                    Arrow("10", Point(5f, 3f), Direction.LEFT, listOf(Point(5f, 3f), Point(6f, 3f))),
+                    Arrow("11", Point(2f, 5f), Direction.UP, listOf(Point(2f, 5f), Point(2f, 6f))),
+                    Arrow("12", Point(6f, 5f), Direction.LEFT, listOf(Point(6f, 5f), Point(7f, 5f))),
+                    Arrow("13", Point(3f, 1f), Direction.RIGHT, listOf(Point(3f, 1f), Point(2f, 1f), Point(1f, 1f))),
+                    Arrow("14", Point(4f, 0f), Direction.RIGHT, listOf(Point(4f, 0f), Point(3f, 0f), Point(2f, 0f))),
+                    Arrow("15", Point(5f, 0f), Direction.LEFT, listOf(Point(5f, 0f), Point(6f, 0f))),
+                    Arrow("16", Point(0f, 3f), Direction.UP, listOf(Point(0f, 3f), Point(0f, 4f))),
+                    Arrow("17", Point(4f, 2f), Direction.RIGHT, listOf(Point(4f, 2f), Point(3f, 2f))),
+                    Arrow("18", Point(5f, 2f), Direction.LEFT, listOf(Point(5f, 2f), Point(6f, 2f))),
+                    Arrow("19", Point(7f, 7f), Direction.UP, listOf(Point(7f, 7f))),
+                    Arrow("20", Point(0f, 6f), Direction.RIGHT, listOf(Point(0f, 6f))),
+                    Arrow("21", Point(3f, 4f), Direction.DOWN, listOf(Point(3f, 4f))),
+                    Arrow("22", Point(5f, 4f), Direction.DOWN, listOf(Point(5f, 4f))),
+                    Arrow("23", Point(4f, 1f), Direction.UP, listOf(Point(4f, 1f))),
+                    Arrow("24", Point(5f, 1f), Direction.UP, listOf(Point(5f, 1f)))
                 )
             )
         )
