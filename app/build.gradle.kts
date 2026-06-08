@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.util.Base64
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -21,10 +24,29 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file("../my-release-key.jks")
-            storePassword = System.getenv("SIGNING_STORE_PASSWORD")
-            keyAlias = System.getenv("SIGNING_KEY_ALIAS")
-            keyPassword = System.getenv("SIGNING_KEY_PASSWORD")
+            val properties = Properties()
+            val localPropertiesFile = rootProject.file("local.properties")
+            if (localPropertiesFile.exists()) {
+                localPropertiesFile.inputStream().use { properties.load(it) }
+            }
+
+            val keystoreBase64 = properties.getProperty("SIGNING_KEY_STORE_BASE64")
+                ?: System.getenv("SIGNING_KEY_STORE_BASE64")
+
+            if (!keystoreBase64.isNullOrBlank()) {
+                val keystoreFile = rootProject.file("release-key.jks")
+                keystoreFile.writeBytes(Base64.getDecoder().decode(keystoreBase64.trim()))
+                storeFile = keystoreFile
+            } else {
+                storeFile = rootProject.file("my-release-key.jks")
+            }
+
+            storePassword = properties.getProperty("SIGNING_STORE_PASSWORD")
+                ?: System.getenv("SIGNING_STORE_PASSWORD")
+            keyAlias = properties.getProperty("SIGNING_KEY_ALIAS")
+                ?: System.getenv("SIGNING_KEY_ALIAS")
+            keyPassword = properties.getProperty("SIGNING_KEY_PASSWORD")
+                ?: System.getenv("SIGNING_KEY_PASSWORD")
         }
     }
 
