@@ -7,6 +7,8 @@ import com.arrow37.data.*
 import com.arrow37.persistence.GameDataStore
 import com.arrow37.audio.SoundManager
 import com.arrow37.audio.HapticManager
+import com.arrow37.network.UpdateManager
+import com.arrow37.network.UpdateResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -410,5 +412,26 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             dataStore.saveNativeRefreshRate(newEnabled)
         }
+    }
+
+    fun checkForUpdates() {
+        viewModelScope.launch {
+            val result = UpdateManager.checkForUpdates(getApplication())
+            if (result is UpdateResult.NewUpdate) {
+                _uiState.update { 
+                    it.copy(
+                        updateInfo = UpdateInfo(
+                            versionName = result.versionName,
+                            downloadUrl = result.downloadUrl,
+                            releaseNotes = result.releaseNotes
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    fun dismissUpdate() {
+        _uiState.update { it.copy(updateInfo = null) }
     }
 }

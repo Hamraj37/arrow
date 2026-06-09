@@ -38,5 +38,12 @@ data class GameState(
     val isSoundEnabled: Boolean = true,
     val isVibrationEnabled: Boolean = true,
     val isDarkMode: Boolean = false,
-    val useNativeRefreshRate: Boolean = true
+    val useNativeRefreshRate: Boolean = true,
+    val updateInfo: UpdateInfo? = null
+)
+
+data class UpdateInfo(
+    val versionName: String,
+    val downloadUrl: String,
+    val releaseNotes: String
 )

@@ -1,18 +1,16 @@
 package com.arrow37.ui.menu
 
-import androidx.compose.foundation.clickable
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.VolumeOff
-import androidx.compose.material.icons.automirrored.rounded.VolumeUp
-import androidx.compose.material.icons.rounded.GridOn
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material.icons.rounded.Vibration
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,6 +27,11 @@ fun MenuScreen(
     onSettingsClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.checkForUpdates()
+    }
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -96,6 +99,42 @@ fun MenuScreen(
                 )
             }
         }
+    }
+
+    state.updateInfo?.let { info ->
+        AlertDialog(
+            onDismissRequest = { viewModel.dismissUpdate() },
+            title = { Text("Update Available") },
+            text = { 
+                Column {
+                    Text("A new version (${info.versionName}) is available.")
+                    if (info.releaseNotes.isNotEmpty()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = info.releaseNotes,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(info.downloadUrl))
+                        context.startActivity(intent)
+                        viewModel.dismissUpdate()
+                    }
+                ) {
+                    Text("UPDATE")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.dismissUpdate() }) {
+                    Text("LATER")
+                }
+            }
+        )
     }
 }
 
