@@ -1,6 +1,8 @@
 package com.arrow37.ui.ads
 
 import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
 import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -12,13 +14,22 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.unity3d.services.banners.BannerView
 import com.unity3d.services.banners.UnityBannerSize
 
+fun Context.findActivity(): Activity? {
+    var context = this
+    while (context is ContextWrapper) {
+        if (context is Activity) return context
+        context = context.baseContext
+    }
+    return null
+}
+
 @Composable
 fun UnityBanner(
     placementId: String,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val activity = context as? Activity ?: return
+    val activity = context.findActivity() ?: return
 
     AndroidView(
         factory = { ctx ->
