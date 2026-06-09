@@ -451,10 +451,10 @@ fun PuzzleGrid(
             )
 
             Canvas(modifier = Modifier.fillMaxSize()) {
-                val arrowColor = primary
                 arrows.forEach { arrow ->
                     if (!arrow.isEscaped) {
-                        drawArrow(arrow, cellSizePx, arrowColor)
+                        val color = if (arrow.isColliding) Color.Red else primary
+                        drawArrow(arrow, cellSizePx, color)
                     }
                 }
             }

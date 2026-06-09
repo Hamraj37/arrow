@@ -301,7 +301,16 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         if (collision) {
             if (_uiState.value.isSoundEnabled) soundManager.playCollision()
             if (_uiState.value.isVibrationEnabled) hapticManager.vibrateCollision()
-            delay(50)
+            
+            // Set colliding state to show color change
+            _uiState.update { state ->
+                state.copy(arrows = state.arrows.map { 
+                    if (it.id == originalArrow.id) it.copy(isColliding = true) else it 
+                })
+            }
+            
+            delay(200) // Brief pause to show the crash color
+            
             _uiState.update { state ->
                 val newLives = state.lives - 1
                 if (newLives <= 0) {
@@ -310,7 +319,12 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 }
                 state.copy(
                     arrows = state.arrows.map { 
-                        if (it.id == originalArrow.id) it.copy(body = originalArrow.body, head = originalArrow.head, isEscaping = false) else it
+                        if (it.id == originalArrow.id) it.copy(
+                            body = originalArrow.body, 
+                            head = originalArrow.head, 
+                            isEscaping = false,
+                            isColliding = false
+                        ) else it
                     },
                     lives = newLives,
                     isGameOver = newLives <= 0

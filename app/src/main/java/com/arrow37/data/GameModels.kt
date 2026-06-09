@@ -20,7 +20,8 @@ data class Arrow(
     val direction: Direction,
     val body: List<Point>,
     val isEscaping: Boolean = false,
-    val isEscaped: Boolean = false
+    val isEscaped: Boolean = false,
+    val isColliding: Boolean = false
 )
 
 @Immutable
