@@ -14,6 +14,14 @@ Arrow is a modern, minimalist puzzle game built with Jetpack Compose. Players mu
     - Sound and Vibration toggles.
     - High-refresh rate optimization for compatible devices.
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/menu.png" width="30%" />
+  <img src="screenshots/gameplay.png" width="30%" />
+  <img src="screenshots/settings.png" width="30%" />
+</p>
+
 ## Tech Stack
 
 - **UI**: [Jetpack Compose](https://developer.android.com/jetpack/compose) for a fully declarative UI.
