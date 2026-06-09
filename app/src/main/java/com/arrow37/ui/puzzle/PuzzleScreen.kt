@@ -60,7 +60,7 @@ fun PuzzleScreen(
         onUndo = { viewModel.undo() },
         onRedo = { viewModel.redo() },
         onReset = { viewModel.reset() },
-        onAddLife = { viewModel.addLife() },
+        onAddLife = { viewModel.addLives(it) },
         onArrowClick = { viewModel.onArrowTapped(it) },
         onNextLevel = { viewModel.nextLevel() },
         onToggleGrid = { viewModel.toggleGrid() },
@@ -78,7 +78,7 @@ fun PuzzleContent(
     onUndo: () -> Unit = {},
     onRedo: () -> Unit = {},
     onReset: () -> Unit = {},
-    onAddLife: () -> Unit = {},
+    onAddLife: (Int) -> Unit = {},
     onArrowClick: (String) -> Unit = {},
     onNextLevel: () -> Unit = {},
     onToggleGrid: () -> Unit = {},
@@ -235,11 +235,11 @@ fun PuzzleContent(
                                 Button(
                                     onClick = {
                                         if (activity != null) {
-                                            UnityAdsManager.showRewardedAd(activity) {
-                                                onAddLife()
+                                            UnityAdsManager.showRewardedAd(activity) { livesEarned ->
+                                                onAddLife(livesEarned)
                                             }
                                         } else {
-                                            onAddLife()
+                                            onAddLife(1)
                                         }
                                     },
                                     modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -327,7 +327,7 @@ fun PuzzleContent(
                                 Button(
                                     onClick = {
                                         if (activity != null) {
-                                            UnityAdsManager.showRewardedAd(activity) {
+                                            UnityAdsManager.showRewardedAd(activity) { _ ->
                                                 onNextLevel()
                                             }
                                         } else {

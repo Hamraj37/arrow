@@ -371,8 +371,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         generateLevel()
     }
 
-    fun addLife() {
-        _uiState.update { it.copy(lives = it.lives + 1, isGameOver = false) }
+    fun addLives(amount: Int) {
+        _uiState.update { it.copy(lives = it.lives + amount, isGameOver = false) }
     }
 
     fun toggleGrid() {

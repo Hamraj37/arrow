@@ -40,12 +40,12 @@ object UnityAdsManager {
         })
     }
 
-    fun showRewardedAd(activity: Activity, onComplete: () -> Unit) {
+    fun showRewardedAd(activity: Activity, onComplete: (Int) -> Unit) {
         UnityAds.show(activity, REWARDED_PLACEMENT_ID, UnityAdsShowOptions(), object : IUnityAdsShowListener {
             override fun onUnityAdsShowFailure(placementId: String?, error: UnityAds.UnityAdsShowError?, message: String?) {
                 Log.e(TAG, "Rewarded Ad Show Failure: $message")
-                onComplete() // Proceed anyway
-                loadRewardedAd() // Try to reload
+                onComplete(0) // No lives on failure
+                loadRewardedAd()
             }
 
             override fun onUnityAdsShowStart(placementId: String?) {
@@ -58,8 +58,12 @@ object UnityAdsManager {
 
             override fun onUnityAdsShowComplete(placementId: String?, state: UnityAds.UnityAdsShowCompletionState?) {
                 Log.d(TAG, "Rewarded Ad Show Complete: $state")
-                onComplete()
-                loadRewardedAd() // Load next one
+                if (state == UnityAds.UnityAdsShowCompletionState.COMPLETED) {
+                    onComplete(1) // Grant 1 life on completion
+                } else {
+                    onComplete(0)
+                }
+                loadRewardedAd()
             }
         })
     }
