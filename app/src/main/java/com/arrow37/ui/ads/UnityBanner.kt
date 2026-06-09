@@ -3,13 +3,16 @@ package com.arrow37.ui.ads
 import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
-import android.util.Log
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.unity3d.services.banners.BannerView
 import com.unity3d.services.banners.UnityBannerSize
@@ -31,17 +34,27 @@ fun UnityBanner(
     val context = LocalContext.current
     val activity = context.findActivity() ?: return
 
-    AndroidView(
-        factory = { ctx ->
-            BannerView(activity, placementId, UnityBannerSize(320, 50)).apply {
-                load()
-            }
-        },
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(50.dp),
-        update = { view ->
-            // view.load() // Loading every update might be too much, usually once is enough
-        }
-    )
+            .height(50.dp)
+            .background(Color.LightGray.copy(alpha = 0.1f)),
+        contentAlignment = Alignment.Center
+    ) {
+        // Placeholder text that shows behind/before the ad loads
+        Text(
+            text = "ADVERTISEMENT",
+            fontSize = 10.sp,
+            color = Color.Gray.copy(alpha = 0.4f)
+        )
+
+        AndroidView(
+            factory = { ctx ->
+                BannerView(activity, placementId, UnityBannerSize(320, 50)).apply {
+                    load()
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        )
+    }
 }
