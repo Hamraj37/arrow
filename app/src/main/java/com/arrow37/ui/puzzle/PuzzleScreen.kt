@@ -361,13 +361,13 @@ fun PuzzleContent(
                                 }
                                 Spacer(modifier = Modifier.height(12.dp))
                                 OutlinedButton(
-                                    onClick = onBack,
+                                    onClick = onReset,
                                     modifier = Modifier.fillMaxWidth().height(56.dp),
                                     shape = CircleShape,
                                     border = BorderStroke(2.dp, Color(0xFFE0E0E0))
                                 ) {
                                     Text(
-                                        text = "Menu",
+                                        text = "Restart",
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Gray
