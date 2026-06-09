@@ -58,17 +58,23 @@ jobs:
         name: release-bundle
         path: app/build/outputs/bundle/release/*.aab
 
-    - name: Get Version Name
-      id: get_version
+    - name: Get Release Info
+      id: release_info
       run: |
         VERSION_NAME=$(grep "versionName =" app/build.gradle.kts | awk -F '"' '{print $2}')
+        COMMIT_MSG=$(git log -1 --pretty=%B)
         echo "version=$VERSION_NAME" >> $GITHUB_OUTPUT
+        echo "commit_msg<<EOF" >> $GITHUB_OUTPUT
+        echo "$COMMIT_MSG" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        tag_name: v${{ steps.get_version.outputs.version }}
-        name: Release v${{ steps.get_version.outputs.version }}
+        tag_name: v${{ steps.release_info.outputs.version }}
+        name: Release v${{ steps.release_info.outputs.version }}
+        body: |
+          ${{ steps.release_info.outputs.commit_msg }}
         token: ${{ secrets.GITHUB_TOKEN }}
         files: |
           app/build/outputs/apk/release/*.apk
