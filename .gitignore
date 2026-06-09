@@ -2,6 +2,8 @@
 .gradle
 /local.properties
 my-release-key.jks
+.agent/
+.idea/
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
