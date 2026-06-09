@@ -32,7 +32,7 @@ jobs:
         UNITY_GAME_ID: ${{ secrets.UNITY_GAME_ID }}
         UNITY_REWARDED_ID: ${{ secrets.UNITY_REWARDED_ID }}
         UNITY_BANNER_ID: ${{ secrets.UNITY_BANNER_ID }}
-        UNITY_TEST_MODE: false
+        UNITY_TEST_MODE: true
 
     - name: Build Release Bundle
       run: ./gradlew bundleRelease
@@ -44,7 +44,7 @@ jobs:
         UNITY_GAME_ID: ${{ secrets.UNITY_GAME_ID }}
         UNITY_REWARDED_ID: ${{ secrets.UNITY_REWARDED_ID }}
         UNITY_BANNER_ID: ${{ secrets.UNITY_BANNER_ID }}
-        UNITY_TEST_MODE: false
+        UNITY_TEST_MODE: true
 
     - name: Upload APK
       uses: actions/upload-artifact@v4
