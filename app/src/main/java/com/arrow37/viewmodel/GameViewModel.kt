@@ -372,6 +372,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun addLives(amount: Int) {
+        if (amount <= 0) return
         _uiState.update { it.copy(lives = it.lives + amount, isGameOver = false) }
     }
 

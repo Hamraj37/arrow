@@ -236,10 +236,10 @@ fun PuzzleContent(
                                     onClick = {
                                         if (activity != null) {
                                             UnityAdsManager.showRewardedAd(activity) { livesEarned ->
-                                                onAddLife(livesEarned)
+                                                if (livesEarned > 0) onAddLife(3)
                                             }
                                         } else {
-                                            onAddLife(1)
+                                            onAddLife(3)
                                         }
                                     },
                                     modifier = Modifier.fillMaxWidth().height(56.dp),
@@ -258,7 +258,7 @@ fun PuzzleContent(
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = "Add More Lives",
+                                            text = "Watch Ad to Continue",
                                             style = MaterialTheme.typography.titleMedium.copy(
                                                 fontWeight = FontWeight.Bold
                                             )
@@ -327,8 +327,8 @@ fun PuzzleContent(
                                 Button(
                                     onClick = {
                                         if (activity != null) {
-                                            UnityAdsManager.showRewardedAd(activity) { _ ->
-                                                onNextLevel()
+                                            UnityAdsManager.showRewardedAd(activity) { livesEarned ->
+                                                if (livesEarned > 0) onNextLevel()
                                             }
                                         } else {
                                             onNextLevel()
