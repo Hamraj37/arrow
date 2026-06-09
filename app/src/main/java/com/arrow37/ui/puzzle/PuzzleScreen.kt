@@ -323,12 +323,14 @@ fun PuzzleContent(
                                         lineHeight = 20.sp
                                     )
                                 )
-                                Spacer(modifier = Modifier.height(32.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
+                                UnityBanner(placementId = BuildConfig.UNITY_BANNER_ID)
+                                Spacer(modifier = Modifier.height(16.dp))
                                 Button(
                                     onClick = {
                                         if (activity != null) {
-                                            UnityAdsManager.showRewardedAd(activity) { livesEarned ->
-                                                if (livesEarned > 0) onNextLevel()
+                                            UnityAdsManager.showRewardedAd(activity) { 
+                                                onNextLevel()
                                             }
                                         } else {
                                             onNextLevel()
