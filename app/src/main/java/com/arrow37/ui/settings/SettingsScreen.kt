@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arrow37.BuildConfig
 import com.arrow37.viewmodel.GameViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -149,7 +150,7 @@ fun SettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Version 1.0",
+                    text = "Version ${BuildConfig.VERSION_NAME}",
                     color = Color.Gray,
                     fontSize = 14.sp
                 )

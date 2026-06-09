@@ -1,6 +1,7 @@
 package com.arrow37.viewmodel
 
 import android.app.Application
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.arrow37.data.*
@@ -415,8 +416,10 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun checkForUpdates() {
+        Log.d("GameViewModel", "checkForUpdates called")
         viewModelScope.launch {
             val result = UpdateManager.checkForUpdates(getApplication())
+            Log.d("GameViewModel", "Update check result: $result")
             if (result is UpdateResult.NewUpdate) {
                 _uiState.update { 
                     it.copy(
@@ -427,6 +430,8 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                         )
                     )
                 }
+            } else {
+                Log.d("GameViewModel", "No new update found or check failed")
             }
         }
     }

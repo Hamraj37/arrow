@@ -30,6 +30,7 @@ fun MenuScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        android.util.Log.d("MenuScreen", "Checking for updates...")
         viewModel.checkForUpdates()
     }
 

@@ -1,9 +1,8 @@
 package com.arrow37.network
 
 import android.content.Context
-import android.content.pm.PackageManager
-import android.os.Build
 import android.util.Log
+import com.arrow37.BuildConfig
 import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -11,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.OkHttpClient
 import okhttp3.Request
+import java.util.concurrent.TimeUnit
 
 data class GitHubRelease(
     @Json(name = "tag_name") val tagName: String,
@@ -28,43 +28,61 @@ object UpdateManager {
         .build()
     
     private val releaseAdapter = moshi.adapter(GitHubRelease::class.java)
-    private val client = OkHttpClient()
+    private val client = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(15, TimeUnit.SECONDS)
+        .build()
 
     suspend fun checkForUpdates(context: Context): UpdateResult = withContext(Dispatchers.IO) {
+        Log.d("UpdateManager", "Starting update check...")
         try {
-            val currentVersionName = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                context.packageManager.getPackageInfo(context.packageName, PackageManager.PackageInfoFlags.of(0)).versionName
-            } else {
-                @Suppress("DEPRECATION")
-                context.packageManager.getPackageInfo(context.packageName, 0).versionName
-            } ?: "1.0"
+            val currentVersionName = BuildConfig.VERSION_NAME
+            Log.d("UpdateManager", "Current App Version (BuildConfig): $currentVersionName")
 
             val request = Request.Builder()
                 .url(LATEST_RELEASE_URL)
                 .header("Accept", "application/vnd.github.v3+json")
+                .header("User-Agent", "arrow-app")
                 .build()
 
             client.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) return@withContext UpdateResult.NoUpdate
+                if (!response.isSuccessful) {
+                    Log.w("UpdateManager", "Update check failed: ${response.code} ${response.message}")
+                    return@withContext UpdateResult.NoUpdate
+                }
                 
-                val bodyString = response.body?.string() ?: return@withContext UpdateResult.NoUpdate
-                val latestRelease = releaseAdapter.fromJson(bodyString) ?: return@withContext UpdateResult.NoUpdate
+                val bodyString = response.body?.string() ?: run {
+                    Log.w("UpdateManager", "Response body is null")
+                    return@withContext UpdateResult.NoUpdate
+                }
                 
-                val latestVersion = latestRelease.tagName.removePrefix("v").trim()
-                val currentVersion = currentVersionName.removePrefix("v").trim()
+                Log.d("UpdateManager", "GitHub Response: $bodyString")
+                val latestRelease = try {
+                    releaseAdapter.fromJson(bodyString)
+                } catch (e: Exception) {
+                    Log.e("UpdateManager", "Failed to parse JSON", e)
+                    null
+                } ?: return@withContext UpdateResult.NoUpdate
+                
+                val latestVersion = latestRelease.tagName.replace(Regex("^[^0-9]+"), "").trim()
+                val currentVersion = currentVersionName.replace(Regex("^[^0-9]+"), "").trim()
+                
+                Log.d("UpdateManager", "Comparing - Latest: '$latestVersion' vs Current: '$currentVersion'")
 
                 if (isNewer(latestVersion, currentVersion)) {
+                    Log.d("UpdateManager", "New version found!")
                     UpdateResult.NewUpdate(
                         versionName = latestRelease.tagName,
                         downloadUrl = latestRelease.htmlUrl,
                         releaseNotes = latestRelease.body ?: ""
                     )
                 } else {
+                    Log.d("UpdateManager", "App is up to date.")
                     UpdateResult.NoUpdate
                 }
             }
         } catch (e: Exception) {
-            Log.e("UpdateManager", "Failed to check for updates", e)
+            Log.e("UpdateManager", "Exception during update check", e)
             UpdateResult.NoUpdate
         }
     }
