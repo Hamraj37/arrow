@@ -1,18 +1,25 @@
 package com.arrow37.audio
 
 import android.content.Context
-import android.content.res.AssetFileDescriptor
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.util.Log
 
+/**
+ * Manages game sound effects using SoundPool for low-latency playback.
+ * 
+ * To add sounds:
+ * 1. Place your files in app/src/main/res/raw/
+ * 2. Ensure they are lowercase with underscores (e.g., tap.ogg, game_over.wav)
+ * 3. The manager will automatically try to load them by name.
+ */
 class SoundManager(context: Context) {
     private val soundPool: SoundPool
-    private val tapSound: Int
-    private val collisionSound: Int
-    private val winSound: Int
-    private val gameOverSound: Int
-    private val escapeSound: Int
+    private var tapId: Int = -1
+    private var escapeId: Int = -1
+    private var collisionId: Int = -1
+    private var winId: Int = -1
+    private var gameOverId: Int = -1
 
     init {
         val audioAttributes = AudioAttributes.Builder()
@@ -25,51 +32,41 @@ class SoundManager(context: Context) {
             .setAudioAttributes(audioAttributes)
             .build()
 
-        // Load sounds from assets or raw folder
-        escapeSound = loadSound(context, "whoosh_effect.mp3")
-        tapSound = loadSound(context, "tap.mp3")
-        collisionSound = loadSound(context, "collision.mp3")
-        winSound = loadSound(context, "win.mp3")
-        gameOverSound = loadSound(context, "game_over.mp3")
+        // Safely load sounds by name. This prevents compile errors if files are missing.
+        tapId = loadSoundByName(context, "tap")
+        escapeId = loadSoundByName(context, "whoosh_effect") 
+        collisionId = loadSoundByName(context, "collision")
+        winId = loadSoundByName(context, "win")
+        gameOverId = loadSoundByName(context, "game_over")
     }
 
-    private fun loadSound(context: Context, fileName: String): Int {
-        // 1. Try loading from assets
-        try {
-            val afd: AssetFileDescriptor = context.assets.openFd(fileName)
-            return soundPool.load(afd, 1)
-        } catch (e: Exception) {
-            // Not in assets, try raw
-        }
-
-        // 2. Try loading from res/raw
-        try {
-            val resName = fileName.substringBeforeLast(".")
-            val resId = context.resources.getIdentifier(resName, "raw", context.packageName)
-            if (resId != 0) {
-                val afd = context.resources.openRawResourceFd(resId)
-                return soundPool.load(afd, 1)
+    /**
+     * Finds a resource in res/raw by its string name and loads it into SoundPool.
+     */
+    private fun loadSoundByName(context: Context, name: String): Int {
+        val resId = context.resources.getIdentifier(name, "raw", context.packageName)
+        return if (resId != 0) {
+            try {
+                soundPool.load(context, resId, 1)
+            } catch (e: Exception) {
+                Log.e("SoundManager", "Error loading sound '$name': ${e.message}")
+                -1
             }
-        } catch (e: Exception) {
-            Log.e("SoundManager", "Could not load sound $fileName from assets or raw: ${e.message}")
+        } else {
+            Log.w("SoundManager", "Sound file 'res/raw/$name' not found. skipping.")
+            -1
         }
-
-        Log.w("SoundManager", "Sound file not found: $fileName")
-        return -1
     }
 
-    fun playTap() = play(tapSound)
-    fun playCollision() = play(collisionSound)
-    fun playWin() = play(winSound)
-    fun playGameOver() = play(gameOverSound)
-    fun playEscape() = play(escapeSound)
+    fun playTap() = play(tapId)
+    fun playEscape() = play(escapeId)
+    fun playCollision() = play(collisionId)
+    fun playWin() = play(winId)
+    fun playGameOver() = play(gameOverId)
 
     private fun play(soundId: Int) {
         if (soundId != -1) {
-            Log.d("SoundManager", "Playing sound: $soundId")
             soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
-        } else {
-            Log.w("SoundManager", "Attempted to play sound with invalid ID (-1)")
         }
     }
 
