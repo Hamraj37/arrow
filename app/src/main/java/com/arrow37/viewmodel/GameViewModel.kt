@@ -219,7 +219,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         
         var totalMoved = 0f
         var collision = false
-        val step = 0.20f
+        val step = 0.40f
         
         _uiState.update { state ->
             state.copy(arrows = state.arrows.map { 
@@ -295,7 +295,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
             }
             
             if (!anyPartInGrid) break
-            delay(12)
+            delay(8)
         }
 
         if (collision) {
