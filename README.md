@@ -63,4 +63,4 @@ The project includes a CI/CD pipeline (`.github/workflows/android.yml`) that aut
 
 ## License
 
-This project is licensed under the [MIT License.](arrow/blob/master/LICENSE.txt)
+This project is licensed under the [MIT License.](blob/master/LICENSE.txt)
