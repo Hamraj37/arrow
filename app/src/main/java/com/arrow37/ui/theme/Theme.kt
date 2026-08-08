@@ -53,6 +53,8 @@ fun ArrowTheme(
         "French" -> FrStrings
         "German" -> DeStrings
         "Japanese" -> JaStrings
+        "Hindi" -> HiStrings
+        "Bengali" -> BnStrings
         else -> EnStrings
     }
 

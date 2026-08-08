@@ -164,4 +164,58 @@ val JaStrings = AppStrings(
     recentChanges = "最近の変更点："
 )
 
+val HiStrings = AppStrings(
+    startGame = "खेल शुरू करें",
+    levels = "स्तर",
+    settings = "सेटिंग्स",
+    selectLevel = "स्तर चुनें",
+    language = "भाषा",
+    selectLanguage = "भाषा चुनें",
+    vibrations = "कंपन",
+    sounds = "ध्वनि",
+    darkMode = "डार्क मोड",
+    nativeRefreshRate = "नेटिव रिफ्रेश रेट",
+    privacy = "गोपनीयता",
+    termsOfService = "सेवा की शर्तें",
+    version = "संस्करण",
+    developedBy = "Hamraj37 द्वारा विकसित",
+    close = "बंद करें",
+    levelCleared = "स्तर पूरा हुआ!",
+    gameOver = "खेल समाप्त",
+    nextLevel = "अगला स्तर",
+    retry = "पुन: प्रयास करें",
+    exit = "बाहर निकलें",
+    congratulations = "बधाई हो!\nआपने इस पहेली में महारत हासिल कर ली है।",
+    updateNow = "अभी अपडेट करें",
+    updateLater = "बाद में",
+    recentChanges = "हाल के बदलाव:"
+)
+
+val BnStrings = AppStrings(
+    startGame = "খেলা শুরু করুন",
+    levels = "স্তরসমূহ",
+    settings = "সেটিংস",
+    selectLevel = "স্তর নির্বাচন করুন",
+    language = "ভাষা",
+    selectLanguage = "ভাষা নির্বাচন করুন",
+    vibrations = "ভাইব্রেশন",
+    sounds = "শব্দ",
+    darkMode = "ডার্ক মোড",
+    nativeRefreshRate = "নেটিভ রিফ্রেশ রেট",
+    privacy = "গোপনীয়তা",
+    termsOfService = "পরিষেবার শর্তাবলী",
+    version = "ভার্সন",
+    developedBy = "Hamraj37 দ্বারা তৈরি",
+    close = "বন্ধ করুন",
+    levelCleared = "স্তর সম্পন্ন!",
+    gameOver = "খেলা শেষ",
+    nextLevel = "পরবর্তী স্তর",
+    retry = "আবার চেষ্টা করুন",
+    exit = "প্রস্থান",
+    congratulations = "অভিনন্দন!\nআপনি এই ধাঁধায় দক্ষতা অর্জন করেছেন।",
+    updateNow = "এখনই আপডেট করুন",
+    updateLater = "পরে",
+    recentChanges = "সাম্প্রতিক পরিবর্তনগুলি:"
+)
+
 val LocalAppStrings = staticCompositionLocalOf { EnStrings }

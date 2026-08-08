@@ -43,7 +43,7 @@ fun SettingsScreen(
             onDismissRequest = { showLanguageDialog = false },
             title = { Text(strings.selectLanguage) },
             text = {
-                val languages = listOf("English", "Spanish", "French", "German", "Japanese")
+                val languages = listOf("English", "Spanish", "French", "German", "Japanese", "Hindi", "Bengali")
                 Column {
                     languages.forEach { lang ->
                         Row(
