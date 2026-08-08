@@ -1,17 +1,38 @@
 package com.arrow37.ui.menu
 
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Settings
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -21,12 +42,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.core.net.toUri
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arrow37.data.GameState
 import com.arrow37.ui.theme.ArrowTheme
 import com.arrow37.ui.theme.LocalAppStrings
 import com.arrow37.viewmodel.GameViewModel
 
+@Suppress("unused")
 @Composable
 fun MenuScreen(
     onPlayClick: () -> Unit,
@@ -42,11 +65,10 @@ fun MenuScreen(
         onLevelsClick = onLevelsClick,
         onSettingsClick = onSettingsClick,
         onCheckForUpdates = { viewModel.checkForUpdates() },
-        onDismissUpdate = { viewModel.dismissUpdate() }
+        onDismissUpdate = { viewModel.dismissUpdate() },
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreenContent(
     state: GameState,
@@ -54,7 +76,8 @@ fun MenuScreenContent(
     onLevelsClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onCheckForUpdates: () -> Unit,
-    onDismissUpdate: () -> Unit
+    onDismissUpdate: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
     val strings = LocalAppStrings.current
@@ -65,8 +88,8 @@ fun MenuScreenContent(
     }
 
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.background
+        modifier = modifier.fillMaxSize(),
+        containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
         Column(
             modifier = Modifier
@@ -74,22 +97,22 @@ fun MenuScreenContent(
                 .padding(innerPadding)
                 .padding(32.dp),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = "ARROW",
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF4FC3F7),
-                    letterSpacing = 8.sp
-                )
+                    letterSpacing = 8.sp,
+                ),
             )
             Text(
                 text = "ESCAPE",
                 style = MaterialTheme.typography.headlineMedium.copy(
                     color = MaterialTheme.colorScheme.onSurface,
-                    letterSpacing = 4.sp
-                )
+                    letterSpacing = 4.sp,
+                ),
             )
             
             Spacer(modifier = Modifier.height(64.dp))
@@ -100,8 +123,8 @@ fun MenuScreenContent(
                     .fillMaxWidth()
                     .height(56.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF4FC3F7)
-                )
+                    containerColor = Color(0xFF4FC3F7),
+                ),
             ) {
                 Text(strings.startGame, style = MaterialTheme.typography.titleMedium)
             }
@@ -113,14 +136,12 @@ fun MenuScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF4FC3F7))
-                )
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF4FC3F7)),
             ) {
                 Text(
                     strings.levels,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF4FC3F7)
+                    color = Color(0xFF4FC3F7),
                 )
             }
 
@@ -131,20 +152,18 @@ fun MenuScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                border = ButtonDefaults.outlinedButtonBorder.copy(
-                    brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF4FC3F7))
-                )
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF4FC3F7)),
             ) {
                 Icon(
                     Icons.Rounded.Settings,
                     contentDescription = null,
                     tint = Color(0xFF4FC3F7),
-                    modifier = Modifier.padding(end = 8.dp)
+                    modifier = Modifier.padding(end = 8.dp),
                 )
                 Text(
                     strings.settings,
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color(0xFF4FC3F7)
+                    color = Color(0xFF4FC3F7),
                 )
             }
         }
@@ -157,11 +176,11 @@ fun MenuScreenContent(
                 color = Color.White,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)
+                    .padding(16.dp),
             ) {
                 Column(
                     modifier = Modifier.padding(horizontal = 24.dp, vertical = 32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     // Stylized Logo mimicking "Walla"
                     Row(verticalAlignment = Alignment.CenterVertically) {
@@ -170,8 +189,8 @@ fun MenuScreenContent(
                             style = MaterialTheme.typography.headlineSmall.copy(
                                 fontWeight = FontWeight.ExtraBold,
                                 color = Color(0xFF4A69A8),
-                                letterSpacing = 1.sp
-                            )
+                                letterSpacing = 1.sp,
+                            ),
                         )
                         // Tiny dots like in the image
                         Column(modifier = Modifier.padding(start = 2.dp, bottom = 8.dp)) {
@@ -190,8 +209,8 @@ fun MenuScreenContent(
                         text = "Version : ${info.versionName}",
                         style = MaterialTheme.typography.headlineSmall.copy(
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1F1F1F)
-                        )
+                            color = Color(0xFF1F1F1F),
+                        ),
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -202,23 +221,23 @@ fun MenuScreenContent(
                             .fillMaxWidth()
                             .heightIn(max = 240.dp)
                             .background(Color(0xFFF0F2F5), RoundedCornerShape(16.dp))
-                            .padding(16.dp)
+                            .padding(16.dp),
                     ) {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             Text(
                                 text = strings.recentChanges,
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF4F4F4F)
-                                )
+                                    color = Color(0xFF4F4F4F),
+                                ),
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = info.releaseNotes.ifEmpty { "• Bug fixes and performance improvements\n• Stability updates" },
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     color = Color(0xFF4F4F4F),
-                                    lineHeight = 20.sp
-                                )
+                                    lineHeight = 20.sp,
+                                ),
                             )
                         }
                     }
@@ -228,7 +247,7 @@ fun MenuScreenContent(
                     // Primary Action Button (Blue)
                     Button(
                         onClick = {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(info.downloadUrl))
+                            val intent = Intent(Intent.ACTION_VIEW, info.downloadUrl.toUri())
                             context.startActivity(intent)
                             onDismissUpdate()
                         },
@@ -237,15 +256,15 @@ fun MenuScreenContent(
                             .height(52.dp),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF4A69A8)
-                        )
+                            containerColor = Color(0xFF4A69A8),
+                        ),
                     ) {
                         Text(
                             text = strings.updateNow,
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold,
-                                color = Color.White
-                            )
+                                color = Color.White,
+                            ),
                         )
                     }
 
@@ -254,14 +273,14 @@ fun MenuScreenContent(
                     // Secondary Action Button (Text)
                     TextButton(
                         onClick = { onDismissUpdate() },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Text(
                             text = strings.updateLater,
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontWeight = FontWeight.Medium,
-                                color = Color(0xFF4A69A8)
-                            )
+                                color = Color(0xFF4A69A8),
+                            ),
                         )
                     }
                 }
@@ -270,7 +289,7 @@ fun MenuScreenContent(
     }
 }
 
-@Preview(showBackground = true, device = "spec:width=411dp,height=891dp,navigation=buttons")
+@Preview(showBackground = true, device = "spec:width=411dp,height=891dp,navigation=buttons", apiLevel = 36)
 @Composable
 fun MenuScreenPreview() {
     ArrowTheme {
@@ -280,7 +299,7 @@ fun MenuScreenPreview() {
             onLevelsClick = {},
             onSettingsClick = {},
             onCheckForUpdates = {},
-            onDismissUpdate = {}
+            onDismissUpdate = {},
         )
     }
 }
