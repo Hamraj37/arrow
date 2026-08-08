@@ -17,6 +17,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.arrow37.ui.theme.ArrowTheme
+import com.arrow37.ui.theme.LocalAppStrings
 import androidx.compose.ui.tooling.preview.Preview
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -28,12 +29,13 @@ fun LevelSelectionScreen(
     onLevelSelect: (Int) -> Unit,
     onBack: () -> Unit
 ) {
+    val strings = LocalAppStrings.current
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { 
                     Text(
-                        "SELECT LEVEL", 
+                        strings.selectLevel, 
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 2.sp

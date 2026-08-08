@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arrow37.BuildConfig
+import com.arrow37.ui.theme.LocalAppStrings
 import com.arrow37.viewmodel.GameViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -30,14 +31,56 @@ fun SettingsScreen(
     onBack: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
+    val strings = LocalAppStrings.current
     val accentColor = MaterialTheme.colorScheme.primary
     val backgroundColor = MaterialTheme.colorScheme.background
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
+    
+    var showLanguageDialog by remember { mutableStateOf(false) }
+
+    if (showLanguageDialog) {
+        AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = { Text(strings.selectLanguage) },
+            text = {
+                val languages = listOf("English", "Spanish", "French", "German", "Japanese")
+                Column {
+                    languages.forEach { lang ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.updateLanguage(lang)
+                                    showLanguageDialog = false
+                                }
+                                .padding(16.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = state.language == lang,
+                                onClick = {
+                                    viewModel.updateLanguage(lang)
+                                    showLanguageDialog = false
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(lang)
+                        }
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = { showLanguageDialog = false }) {
+                    Text(strings.close)
+                }
+            }
+        )
+    }
 
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Settings", color = onBackgroundColor, fontWeight = FontWeight.Bold) },
+                title = { Text(strings.settings, color = onBackgroundColor, fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = onBackgroundColor)
@@ -67,10 +110,11 @@ fun SettingsScreen(
                 SettingsGroup {
                     SettingRow(
                         icon = Icons.Rounded.Language,
-                        title = "Language",
+                        title = strings.language,
+                        onClick = { showLanguageDialog = true },
                         trailing = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text("English", color = Color.Gray, fontSize = 14.sp)
+                                Text(state.language, color = Color.Gray, fontSize = 14.sp)
                                 Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = Color.Gray)
                             }
                         }
@@ -78,7 +122,7 @@ fun SettingsScreen(
                     SettingDivider()
                     SettingRow(
                         icon = Icons.Rounded.Waves,
-                        title = "Vibrations",
+                        title = strings.vibrations,
                         trailing = {
                             Switch(
                                 checked = state.isVibrationEnabled,
@@ -90,7 +134,7 @@ fun SettingsScreen(
                     SettingDivider()
                     SettingRow(
                         icon = Icons.Rounded.VolumeUp,
-                        title = "Sounds",
+                        title = strings.sounds,
                         trailing = {
                             Switch(
                                 checked = state.isSoundEnabled,
@@ -102,7 +146,7 @@ fun SettingsScreen(
                     SettingDivider()
                     SettingRow(
                         icon = Icons.Rounded.DarkMode,
-                        title = "Dark mode",
+                        title = strings.darkMode,
                         trailing = {
                             Switch(
                                 checked = state.isDarkMode,
@@ -114,7 +158,7 @@ fun SettingsScreen(
                     SettingDivider()
                     SettingRow(
                         icon = Icons.Rounded.Smartphone,
-                        title = "Native Refresh Rate",
+                        title = strings.nativeRefreshRate,
                         trailing = {
                             Switch(
                                 checked = state.useNativeRefreshRate,
@@ -131,12 +175,12 @@ fun SettingsScreen(
                 SettingsGroup {
                     SettingRow(
                         icon = Icons.Rounded.Description,
-                        title = "Privacy"
+                        title = strings.privacy
                     )
                     SettingDivider()
                     SettingRow(
                         icon = Icons.Rounded.Info,
-                        title = "Terms of Service"
+                        title = strings.termsOfService
                     )
                 }
                 
@@ -150,12 +194,12 @@ fun SettingsScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "Version ${BuildConfig.VERSION_NAME}",
+                    text = "${strings.version} ${BuildConfig.VERSION_NAME}",
                     color = Color.Gray,
                     fontSize = 14.sp
                 )
                 Text(
-                    text = "Developed by Hamraj37",
+                    text = strings.developedBy,
                     color = Color.Gray,
                     fontSize = 14.sp
                 )

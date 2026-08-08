@@ -33,6 +33,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arrow37.ui.theme.ArrowTheme
+import com.arrow37.ui.theme.LocalAppStrings
 import com.arrow37.data.Arrow
 import com.arrow37.data.Direction
 import com.arrow37.data.GameState
@@ -87,6 +88,7 @@ fun PuzzleContent(
 ) {
     val context = LocalContext.current
     val activity = context as? Activity
+    val strings = LocalAppStrings.current
 
     Scaffold(
         topBar = {
@@ -118,12 +120,12 @@ fun PuzzleContent(
                 navigationIcon = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         IconButton(onClick = onBack) {
-                            Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = MaterialTheme.colorScheme.onBackground)
+                            Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = strings.exit, tint = MaterialTheme.colorScheme.onBackground)
                         }
                         IconButton(onClick = onSettings) {
                             Icon(
                                 imageVector = Icons.Rounded.Settings,
-                                contentDescription = "Settings",
+                                contentDescription = strings.settings,
                                 tint = MaterialTheme.colorScheme.onBackground
                             )
                         }
@@ -133,14 +135,14 @@ fun PuzzleContent(
                     IconButton(onClick = onUndo, enabled = state.history.isNotEmpty()) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Undo,
-                            contentDescription = "Undo", 
+                            contentDescription = null, 
                             tint = if (state.history.isNotEmpty()) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
                         )
                     }
                     IconButton(onClick = onRedo, enabled = state.redoStack.isNotEmpty()) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Rounded.Redo, 
-                            contentDescription = "Redo", 
+                            contentDescription = null, 
                             tint = if (state.redoStack.isNotEmpty()) MaterialTheme.colorScheme.onBackground else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
                         )
                     }
@@ -205,7 +207,7 @@ fun PuzzleContent(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = "Continue?",
+                                    text = strings.gameOver,
                                     style = MaterialTheme.typography.headlineSmall.copy(
                                         fontWeight = FontWeight.ExtraBold,
                                         color = Color(0xFF334195)
@@ -273,7 +275,7 @@ fun PuzzleContent(
                                     border = BorderStroke(2.dp, Color(0xFFE0E0E0))
                                 ) {
                                     Text(
-                                        text = "Restart",
+                                        text = strings.retry,
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Gray
@@ -297,7 +299,7 @@ fun PuzzleContent(
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text(
-                                    text = "Level Cleared!",
+                                    text = strings.levelCleared,
                                     style = MaterialTheme.typography.headlineSmall.copy(
                                         fontWeight = FontWeight.ExtraBold,
                                         color = Color(0xFF334195)
@@ -316,7 +318,7 @@ fun PuzzleContent(
                                 }
                                 Spacer(modifier = Modifier.height(24.dp))
                                 Text(
-                                    text = "Congratulations!\nYou've mastered this puzzle.",
+                                    text = strings.congratulations,
                                     textAlign = TextAlign.Center,
                                     style = MaterialTheme.typography.bodyLarge.copy(
                                         color = Color.Gray,
@@ -352,7 +354,7 @@ fun PuzzleContent(
                                         )
                                         Spacer(modifier = Modifier.width(8.dp))
                                         Text(
-                                            text = "Next Level",
+                                            text = strings.nextLevel,
                                             style = MaterialTheme.typography.titleMedium.copy(
                                                 fontWeight = FontWeight.Bold
                                             )
@@ -367,7 +369,7 @@ fun PuzzleContent(
                                     border = BorderStroke(2.dp, Color(0xFFE0E0E0))
                                 ) {
                                     Text(
-                                        text = "Restart",
+                                        text = strings.retry,
                                         style = MaterialTheme.typography.titleMedium.copy(
                                             fontWeight = FontWeight.Bold,
                                             color = Color.Gray

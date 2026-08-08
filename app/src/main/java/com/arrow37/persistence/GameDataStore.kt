@@ -26,6 +26,7 @@ class GameDataStore(context: Context) {
         private val DARK_MODE_KEY = booleanPreferencesKey("dark_mode")
         private val REFRESH_RATE_KEY = booleanPreferencesKey("refresh_rate_native")
         private val LEVEL_STARS_KEY = stringPreferencesKey("level_stars")
+        private val LANGUAGE_KEY = stringPreferencesKey("language")
     }
 
     private val moshi = Moshi.Builder()
@@ -70,6 +71,11 @@ class GameDataStore(context: Context) {
             }
         }
 
+    val language: Flow<String> = appContext.dataStore.data
+        .map { preferences ->
+            preferences[LANGUAGE_KEY] ?: "English"
+        }
+
     suspend fun saveLevel(level: Int) {
         appContext.dataStore.edit { preferences ->
             preferences[LEVEL_KEY] = level
@@ -97,6 +103,12 @@ class GameDataStore(context: Context) {
     suspend fun saveNativeRefreshRate(enabled: Boolean) {
         appContext.dataStore.edit { preferences ->
             preferences[REFRESH_RATE_KEY] = enabled
+        }
+    }
+
+    suspend fun saveLanguage(language: String) {
+        appContext.dataStore.edit { preferences ->
+            preferences[LANGUAGE_KEY] = language
         }
     }
 

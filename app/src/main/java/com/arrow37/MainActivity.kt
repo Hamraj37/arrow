@@ -61,7 +61,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            ArrowTheme(darkTheme = state.isDarkMode) {
+            ArrowTheme(
+                darkTheme = state.isDarkMode,
+                language = state.language
+            ) {
                 val backStack = rememberNavBackStack(MenuKey)
                 
                 val provider = entryProvider {

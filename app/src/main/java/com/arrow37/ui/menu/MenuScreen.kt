@@ -24,6 +24,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.arrow37.data.GameState
 import com.arrow37.ui.theme.ArrowTheme
+import com.arrow37.ui.theme.LocalAppStrings
 import com.arrow37.viewmodel.GameViewModel
 
 @Composable
@@ -56,6 +57,7 @@ fun MenuScreenContent(
     onDismissUpdate: () -> Unit
 ) {
     val context = LocalContext.current
+    val strings = LocalAppStrings.current
 
     LaunchedEffect(Unit) {
         android.util.Log.d("MenuScreen", "Checking for updates...")
@@ -101,7 +103,7 @@ fun MenuScreenContent(
                     containerColor = Color(0xFF4FC3F7)
                 )
             ) {
-                Text("START GAME", style = MaterialTheme.typography.titleMedium)
+                Text(strings.startGame, style = MaterialTheme.typography.titleMedium)
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -116,7 +118,7 @@ fun MenuScreenContent(
                 )
             ) {
                 Text(
-                    "LEVELS",
+                    strings.levels,
                     style = MaterialTheme.typography.titleMedium,
                     color = Color(0xFF4FC3F7)
                 )
@@ -140,7 +142,7 @@ fun MenuScreenContent(
                     modifier = Modifier.padding(end = 8.dp)
                 )
                 Text(
-                    "SETTINGS",
+                    strings.settings,
                     style = MaterialTheme.typography.titleMedium,
                     color = Color(0xFF4FC3F7)
                 )
@@ -204,7 +206,7 @@ fun MenuScreenContent(
                     ) {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                             Text(
-                                text = "Recent Changes:",
+                                text = strings.recentChanges,
                                 style = MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF4F4F4F)
@@ -239,7 +241,7 @@ fun MenuScreenContent(
                         )
                     ) {
                         Text(
-                            text = "Update Now",
+                            text = strings.updateNow,
                             style = MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold,
                                 color = Color.White
@@ -255,7 +257,7 @@ fun MenuScreenContent(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "Update Later",
+                            text = strings.updateLater,
                             style = MaterialTheme.typography.bodyLarge.copy(
                                 fontWeight = FontWeight.Medium,
                                 color = Color(0xFF4A69A8)

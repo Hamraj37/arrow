@@ -8,6 +8,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
@@ -36,6 +37,7 @@ private val LightColorScheme = lightColorScheme(
 fun ArrowTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     dynamicColor: Boolean = true, // Enable Material You by default
+    language: String = "English",
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -45,10 +47,20 @@ fun ArrowTheme(
         }
         else -> DarkColorScheme // Use dark scheme by default for the game look
     }
+    
+    val strings = when (language) {
+        "Spanish" -> EsStrings
+        "French" -> FrStrings
+        "German" -> DeStrings
+        "Japanese" -> JaStrings
+        else -> EnStrings
+    }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
+    CompositionLocalProvider(LocalAppStrings provides strings) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

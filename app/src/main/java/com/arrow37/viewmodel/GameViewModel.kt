@@ -54,6 +54,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 _uiState.update { it.copy(levelStars = stars) }
             }
         }
+        viewModelScope.launch {
+            dataStore.language.collect { lang ->
+                _uiState.update { it.copy(language = lang) }
+            }
+        }
     }
 
     /**
@@ -442,6 +447,13 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update { it.copy(useNativeRefreshRate = newEnabled) }
         viewModelScope.launch {
             dataStore.saveNativeRefreshRate(newEnabled)
+        }
+    }
+
+    fun updateLanguage(language: String) {
+        _uiState.update { it.copy(language = language) }
+        viewModelScope.launch {
+            dataStore.saveLanguage(language)
         }
     }
 

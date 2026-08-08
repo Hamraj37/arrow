@@ -42,6 +42,7 @@ data class GameState(
     val isDarkMode: Boolean = false,
     val useNativeRefreshRate: Boolean = true,
     val levelStars: Map<Int, Int> = emptyMap(),
+    val language: String = "English",
     val updateInfo: UpdateInfo? = null
 )
 
