@@ -9,6 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.rounded.VolumeUp
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -28,7 +29,7 @@ import com.arrow37.viewmodel.GameViewModel
 @Composable
 fun SettingsScreen(
     viewModel: GameViewModel = viewModel(),
-    onBack: () -> Unit
+    onBack: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
     val strings = LocalAppStrings.current
@@ -36,7 +37,7 @@ fun SettingsScreen(
     val backgroundColor = MaterialTheme.colorScheme.background
     val onBackgroundColor = MaterialTheme.colorScheme.onBackground
     
-    var showLanguageDialog by remember { mutableStateOf(false) }
+    var showLanguageDialog by remember { mutableStateOf(value = false) }
 
     if (showLanguageDialog) {
         AlertDialog(
@@ -133,7 +134,7 @@ fun SettingsScreen(
                     )
                     SettingDivider()
                     SettingRow(
-                        icon = Icons.Rounded.VolumeUp,
+                        icon = Icons.AutoMirrored.Rounded.VolumeUp,
                         title = strings.sounds,
                         trailing = {
                             Switch(
