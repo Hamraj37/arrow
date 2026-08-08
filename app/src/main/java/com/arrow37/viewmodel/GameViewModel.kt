@@ -26,7 +26,7 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
     init {
         viewModelScope.launch {
             val savedLevel = dataStore.currentLevel.first()
-            _uiState.update { it.copy(level = savedLevel) }
+            _uiState.update { it.copy(level = savedLevel, maxLevelReached = savedLevel) }
             generateLevel()
         }
         viewModelScope.launch {
@@ -47,6 +47,11 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             dataStore.useNativeRefreshRate.collect { enabled ->
                 _uiState.update { it.copy(useNativeRefreshRate = enabled) }
+            }
+        }
+        viewModelScope.launch {
+            dataStore.levelStars.collect { stars ->
+                _uiState.update { it.copy(levelStars = stars) }
             }
         }
     }
@@ -190,10 +195,18 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
 
     fun nextLevel() {
         val next = _uiState.value.level + 1
-        _uiState.update { it.copy(level = next) }
-        viewModelScope.launch {
-            dataStore.saveLevel(next)
+        _uiState.update { state -> 
+            val newMax = maxOf(state.maxLevelReached, next)
+            state.copy(level = next, maxLevelReached = newMax) 
         }
+        viewModelScope.launch {
+            dataStore.saveLevel(_uiState.value.maxLevelReached)
+        }
+        generateLevel()
+    }
+
+    fun selectLevel(level: Int) {
+        _uiState.update { it.copy(level = level) }
         generateLevel()
     }
 
@@ -340,6 +353,9 @@ class GameViewModel(application: Application) : AndroidViewModel(application) {
                 if (cleared) {
                     if (state.isSoundEnabled) soundManager.playWin()
                     if (state.isVibrationEnabled) hapticManager.vibrateWin()
+                    viewModelScope.launch {
+                        dataStore.saveLevelStars(state.level, state.lives)
+                    }
                 }
                 state.copy(
                     arrows = updatedArrows,

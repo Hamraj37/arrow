@@ -10,4 +10,7 @@ data object MenuKey : NavKey
 data object GameKey : NavKey
 
 @Serializable
+data object LevelsKey : NavKey
+
+@Serializable
 data object SettingsKey : NavKey

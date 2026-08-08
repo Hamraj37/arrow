@@ -30,6 +30,7 @@ data class GameState(
     val lives: Int = 3,
     val gridSize: Int = 12,
     val level: Int = 1,
+    val maxLevelReached: Int = 1,
     val levelName: String = "Hard",
     val isGameOver: Boolean = false,
     val isLevelCleared: Boolean = false,
@@ -40,6 +41,7 @@ data class GameState(
     val isVibrationEnabled: Boolean = true,
     val isDarkMode: Boolean = false,
     val useNativeRefreshRate: Boolean = true,
+    val levelStars: Map<Int, Int> = emptyMap(),
     val updateInfo: UpdateInfo? = null
 )
 

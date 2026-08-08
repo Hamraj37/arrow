@@ -13,7 +13,9 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.ui.NavDisplay
 import com.arrow37.ui.menu.MenuScreen
+import com.arrow37.ui.menu.LevelSelectionScreen
 import com.arrow37.ui.navigation.GameKey
+import com.arrow37.ui.navigation.LevelsKey
 import com.arrow37.ui.navigation.MenuKey
 import com.arrow37.ui.navigation.SettingsKey
 import com.arrow37.ui.puzzle.PuzzleScreen
@@ -65,9 +67,23 @@ class MainActivity : ComponentActivity() {
                 val provider = entryProvider {
                     entry<MenuKey> {
                         MenuScreen(
-                            viewModel = gameViewModel,
                             onPlayClick = { backStack.add(GameKey) },
-                            onSettingsClick = { backStack.add(SettingsKey) }
+                            onLevelsClick = { backStack.add(LevelsKey) },
+                            onSettingsClick = { backStack.add(SettingsKey) },
+                            viewModel = gameViewModel,
+                        )
+                    }
+                    entry<LevelsKey> {
+                        LevelSelectionScreen(
+                            maxLevel = state.maxLevelReached,
+                            currentLevel = state.level,
+                            levelStars = state.levelStars,
+                            onLevelSelect = { level ->
+                                gameViewModel.selectLevel(level)
+                                backStack.removeLastOrNull()
+                                backStack.add(GameKey)
+                            },
+                            onBack = { backStack.removeLastOrNull() }
                         )
                     }
                     entry<GameKey> {

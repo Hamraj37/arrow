@@ -17,28 +17,49 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.arrow37.data.GameState
 import com.arrow37.ui.theme.ArrowTheme
 import com.arrow37.viewmodel.GameViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MenuScreen(
-    viewModel: GameViewModel = viewModel(),
     onPlayClick: () -> Unit,
-    onSettingsClick: () -> Unit
+    onLevelsClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    viewModel: GameViewModel = viewModel(),
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    MenuScreenContent(
+        state = state,
+        onPlayClick = onPlayClick,
+        onLevelsClick = onLevelsClick,
+        onSettingsClick = onSettingsClick,
+        onCheckForUpdates = { viewModel.checkForUpdates() },
+        onDismissUpdate = { viewModel.dismissUpdate() }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MenuScreenContent(
+    state: GameState,
+    onPlayClick: () -> Unit,
+    onLevelsClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    onCheckForUpdates: () -> Unit,
+    onDismissUpdate: () -> Unit
+) {
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         android.util.Log.d("MenuScreen", "Checking for updates...")
-        viewModel.checkForUpdates()
+        onCheckForUpdates()
     }
 
     Scaffold(
@@ -86,6 +107,24 @@ fun MenuScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             OutlinedButton(
+                onClick = onLevelsClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                border = ButtonDefaults.outlinedButtonBorder.copy(
+                    brush = androidx.compose.ui.graphics.SolidColor(Color(0xFF4FC3F7))
+                )
+            ) {
+                Text(
+                    "LEVELS",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color(0xFF4FC3F7)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            OutlinedButton(
                 onClick = onSettingsClick,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -110,7 +149,7 @@ fun MenuScreen(
     }
 
     state.updateInfo?.let { info ->
-        Dialog(onDismissRequest = { viewModel.dismissUpdate() }) {
+        Dialog(onDismissRequest = { onDismissUpdate() }) {
             Surface(
                 shape = RoundedCornerShape(24.dp),
                 color = Color.White,
@@ -189,7 +228,7 @@ fun MenuScreen(
                         onClick = {
                             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(info.downloadUrl))
                             context.startActivity(intent)
-                            viewModel.dismissUpdate()
+                            onDismissUpdate()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -212,7 +251,7 @@ fun MenuScreen(
 
                     // Secondary Action Button (Text)
                     TextButton(
-                        onClick = { viewModel.dismissUpdate() },
+                        onClick = { onDismissUpdate() },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
@@ -233,6 +272,13 @@ fun MenuScreen(
 @Composable
 fun MenuScreenPreview() {
     ArrowTheme {
-        MenuScreen(onPlayClick = {}, onSettingsClick = {})
+        MenuScreenContent(
+            state = GameState(),
+            onPlayClick = {},
+            onLevelsClick = {},
+            onSettingsClick = {},
+            onCheckForUpdates = {},
+            onDismissUpdate = {}
+        )
     }
 }
