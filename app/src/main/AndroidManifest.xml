@@ -30,6 +30,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".ui.settings.PrivacyActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Arrow" />
+
+        <activity
+            android:name=".ui.settings.TermsOfServiceActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Arrow" />
     </application>
 
 </manifest>

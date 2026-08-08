@@ -17,21 +17,57 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import android.content.Intent
 import com.arrow37.BuildConfig
+import com.arrow37.data.GameState
+import com.arrow37.ui.theme.ArrowTheme
 import com.arrow37.ui.theme.LocalAppStrings
 import com.arrow37.viewmodel.GameViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
     viewModel: GameViewModel = viewModel(),
     onBack: () -> Unit,
 ) {
     val state by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
+    
+    SettingsScreenContent(
+        state = state,
+        onBack = onBack,
+        onLanguageUpdate = { viewModel.updateLanguage(it) },
+        onVibrationToggle = { viewModel.toggleVibration() },
+        onSoundToggle = { viewModel.toggleSound() },
+        onDarkModeToggle = { viewModel.toggleDarkMode() },
+        onNativeRefreshRateToggle = { viewModel.toggleNativeRefreshRate() },
+        onPrivacyClick = {
+            context.startActivity(Intent(context, PrivacyActivity::class.java))
+        },
+        onTermsClick = {
+            context.startActivity(Intent(context, TermsOfServiceActivity::class.java))
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SettingsScreenContent(
+    state: GameState,
+    onBack: () -> Unit,
+    onLanguageUpdate: (String) -> Unit,
+    onVibrationToggle: () -> Unit,
+    onSoundToggle: () -> Unit,
+    onDarkModeToggle: () -> Unit,
+    onNativeRefreshRateToggle: () -> Unit,
+    onPrivacyClick: () -> Unit,
+    onTermsClick: () -> Unit
+) {
     val strings = LocalAppStrings.current
     val accentColor = MaterialTheme.colorScheme.primary
     val backgroundColor = MaterialTheme.colorScheme.background
@@ -51,7 +87,7 @@ fun SettingsScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .clickable {
-                                    viewModel.updateLanguage(lang)
+                                    onLanguageUpdate(lang)
                                     showLanguageDialog = false
                                 }
                                 .padding(16.dp),
@@ -60,7 +96,7 @@ fun SettingsScreen(
                             RadioButton(
                                 selected = state.language == lang,
                                 onClick = {
-                                    viewModel.updateLanguage(lang)
+                                    onLanguageUpdate(lang)
                                     showLanguageDialog = false
                                 }
                             )
@@ -127,7 +163,7 @@ fun SettingsScreen(
                         trailing = {
                             Switch(
                                 checked = state.isVibrationEnabled,
-                                onCheckedChange = { viewModel.toggleVibration() },
+                                onCheckedChange = { onVibrationToggle() },
                                 colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
                             )
                         }
@@ -139,7 +175,7 @@ fun SettingsScreen(
                         trailing = {
                             Switch(
                                 checked = state.isSoundEnabled,
-                                onCheckedChange = { viewModel.toggleSound() },
+                                onCheckedChange = { onSoundToggle() },
                                 colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
                             )
                         }
@@ -151,7 +187,7 @@ fun SettingsScreen(
                         trailing = {
                             Switch(
                                 checked = state.isDarkMode,
-                                onCheckedChange = { viewModel.toggleDarkMode() },
+                                onCheckedChange = { onDarkModeToggle() },
                                 colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
                             )
                         }
@@ -163,7 +199,7 @@ fun SettingsScreen(
                         trailing = {
                             Switch(
                                 checked = state.useNativeRefreshRate,
-                                onCheckedChange = { viewModel.toggleNativeRefreshRate() },
+                                onCheckedChange = { onNativeRefreshRateToggle() },
                                 colors = SwitchDefaults.colors(checkedTrackColor = accentColor)
                             )
                         }
@@ -176,12 +212,20 @@ fun SettingsScreen(
                 SettingsGroup {
                     SettingRow(
                         icon = Icons.Rounded.Description,
-                        title = strings.privacy
+                        title = strings.privacy,
+                        onClick = onPrivacyClick,
+                        trailing = {
+                            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = Color.Gray)
+                        }
                     )
                     SettingDivider()
                     SettingRow(
                         icon = Icons.Rounded.Info,
-                        title = strings.termsOfService
+                        title = strings.termsOfService,
+                        onClick = onTermsClick,
+                        trailing = {
+                            Icon(Icons.AutoMirrored.Rounded.KeyboardArrowRight, contentDescription = null, tint = Color.Gray)
+                        }
                     )
                 }
                 
@@ -206,6 +250,24 @@ fun SettingsScreen(
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SettingsScreenPreview() {
+    ArrowTheme {
+        SettingsScreenContent(
+            state = GameState(),
+            onBack = {},
+            onLanguageUpdate = {},
+            onVibrationToggle = {},
+            onSoundToggle = {},
+            onDarkModeToggle = {},
+            onNativeRefreshRateToggle = {},
+            onPrivacyClick = {},
+            onTermsClick = {}
+        )
     }
 }
 
